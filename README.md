@@ -102,7 +102,7 @@ sequenceDiagram
 
 ```bash
 # Clone the repository
-git clone https://github.com/your-username/aware.git
+git clone https://github.com/Fire162/aware.git
 cd aware
 
 # Install dependencies
