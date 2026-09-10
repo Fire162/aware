@@ -5,6 +5,14 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.3.1] - 2026-09-11 02:42 IST
+
+### Added
+* Polished UI visual experience with dual ambient glowing backdrops, inset card depth, and animated progress track shimmer.
+* Multi-phase color gradient transitions on the Mindful Breathing Orb (Cyan Inhale $\rightarrow$ Amber Hold $\rightarrow$ Purple Exhale).
+* Urgent pulse states and color-shifting indicators on the 20s inactivity watchdog.
+* Enhanced button states featuring glowing ready animations for pledge unlock.
+
 ## [1.3.0] - 2026-09-11 02:29 IST
 
 ### Added

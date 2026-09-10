@@ -1,7 +1,7 @@
 :root {
-  --bg-main: #050811;
+  --bg-main: #040711;
   --bg-card: #0B101E;
-  --bg-input: #070B14;
+  --bg-input: #060A13;
   --border: rgba(255, 255, 255, 0.09);
   --border-focus: #3B82F6;
   --primary: #3B82F6;
@@ -9,6 +9,8 @@
   --danger: #EF4444;
   --success: #10B981;
   --accent-cyan: #06B6D4;
+  --accent-amber: #F59E0B;
+  --accent-purple: #A855F7;
   --text-main: #F8FAFC;
   --text-muted: #94A3B8;
 }
@@ -35,6 +37,34 @@ body {
   user-select: none;
   -webkit-user-select: none;
   overflow-x: hidden;
+  position: relative;
+}
+
+/* Ambient Background Glows */
+body::before {
+  content: '';
+  position: absolute;
+  top: -15%;
+  left: 20%;
+  width: 450px;
+  height: 450px;
+  background: radial-gradient(circle, rgba(59, 130, 246, 0.12) 0%, transparent 70%);
+  filter: blur(80px);
+  pointer-events: none;
+  z-index: 0;
+}
+
+body::after {
+  content: '';
+  position: absolute;
+  bottom: -15%;
+  right: 20%;
+  width: 450px;
+  height: 450px;
+  background: radial-gradient(circle, rgba(6, 182, 212, 0.1) 0%, transparent 70%);
+  filter: blur(80px);
+  pointer-events: none;
+  z-index: 0;
 }
 
 .guard-screen {
@@ -44,6 +74,8 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
+  position: relative;
+  z-index: 1;
 }
 
 .guard-modal {
@@ -53,7 +85,7 @@ body {
   border: 1px solid var(--border);
   border-radius: 20px;
   padding: 28px 32px;
-  box-shadow: 0 30px 80px -20px rgba(0, 0, 0, 0.95);
+  box-shadow: 0 30px 80px -20px rgba(0, 0, 0, 0.95), 0 0 30px rgba(59, 130, 246, 0.05);
   display: flex;
   flex-direction: column;
   gap: 16px;
@@ -124,16 +156,19 @@ body {
   font-size: 13px;
   color: #93C5FD;
   font-style: italic;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.03);
 }
 
 /* Canvas Viewport */
 .pledge-viewport {
-  background: #070B14;
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 10px;
+  background: #060A13;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 12px;
   overflow: hidden;
   display: flex;
   flex-direction: column;
+  box-shadow: inset 0 2px 8px rgba(0, 0, 0, 0.5), 0 4px 12px rgba(0, 0, 0, 0.2);
+  position: relative;
 }
 
 .pledge-meta {
@@ -151,6 +186,9 @@ body {
   color: #E2E8F0;
   text-transform: uppercase;
   letter-spacing: 0.05em;
+  display: flex;
+  align-items: center;
+  gap: 6px;
 }
 
 .meta-tag {
@@ -160,6 +198,7 @@ body {
   border-radius: 9999px;
   font-size: 10px;
   font-weight: 700;
+  border: 1px solid rgba(239, 68, 68, 0.3);
 }
 
 #pledge-canvas {
@@ -191,8 +230,23 @@ body {
   font-size: 10px;
   color: var(--text-muted);
   background: rgba(255, 255, 255, 0.05);
-  padding: 2px 6px;
-  border-radius: 4px;
+  padding: 3px 8px;
+  border-radius: 6px;
+  transition: all 0.3s ease;
+  border: 1px solid transparent;
+}
+
+.idle-indicator.idle-warning {
+  color: #FBBF24;
+  background: rgba(245, 158, 11, 0.15);
+  border-color: rgba(245, 158, 11, 0.3);
+}
+
+.idle-indicator.idle-urgent {
+  color: #F87171;
+  background: rgba(239, 68, 68, 0.2);
+  border-color: rgba(239, 68, 68, 0.4);
+  animation: pulseUrgent 0.8s infinite alternate;
 }
 
 .status-pill {
@@ -226,17 +280,20 @@ body {
 
 .progress-track {
   width: 100%;
-  height: 5px;
+  height: 7px;
   background: rgba(255, 255, 255, 0.08);
   border-radius: 9999px;
   overflow: hidden;
+  position: relative;
 }
 
 .progress-fill {
   height: 100%;
   width: 0%;
-  background: linear-gradient(90deg, #3B82F6 0%, #10B981 100%);
-  transition: width 0.1s ease;
+  background: linear-gradient(90deg, #3B82F6 0%, #06B6D4 50%, #10B981 100%);
+  border-radius: 9999px;
+  transition: width 0.15s ease;
+  box-shadow: 0 0 10px rgba(16, 185, 129, 0.4);
 }
 
 .typing-input {
@@ -256,12 +313,12 @@ body {
 
 .typing-input:focus {
   border-color: var(--primary);
-  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2);
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.25);
 }
 
 .typing-input.typing-error {
   border-color: var(--danger);
-  box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.2);
+  box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.25);
 }
 
 .warning-toast {
@@ -272,6 +329,7 @@ body {
   padding: 8px 12px;
   border-radius: 6px;
   text-align: center;
+  box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
 }
 
 /* Buttons */
@@ -299,6 +357,7 @@ body {
 .btn-focus:hover {
   background: #34D399;
   transform: translateY(-1px);
+  box-shadow: 0 4px 14px rgba(16, 185, 129, 0.4);
 }
 
 .btn-subtle {
@@ -306,11 +365,13 @@ body {
   color: #94A3B8;
   font-size: 12px;
   padding: 7px 11px;
+  border: 1px solid rgba(255, 255, 255, 0.06);
 }
 
 .btn-subtle:hover {
   background: rgba(255, 255, 255, 0.12);
   color: #FFFFFF;
+  border-color: rgba(255, 255, 255, 0.15);
 }
 
 .bottom-actions {
@@ -326,11 +387,13 @@ body {
   background: rgba(255, 255, 255, 0.08);
   color: #CBD5E1;
   font-size: 13px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
 }
 
 .btn-secondary:hover {
   background: rgba(255, 255, 255, 0.15);
   color: #FFFFFF;
+  border-color: rgba(255, 255, 255, 0.2);
 }
 
 .btn-unlock {
@@ -340,18 +403,21 @@ body {
   color: #64748B;
   font-size: 13px;
   cursor: not-allowed;
+  border: 1px solid rgba(255, 255, 255, 0.06);
 }
 
 .btn-unlock.ready {
-  background: var(--primary);
+  background: linear-gradient(135deg, var(--primary) 0%, var(--primary-hover) 100%);
   color: #FFFFFF;
   cursor: pointer;
-  box-shadow: 0 4px 16px rgba(59, 130, 246, 0.4);
+  box-shadow: 0 4px 20px rgba(59, 130, 246, 0.5);
+  border: 1px solid rgba(147, 197, 253, 0.3);
+  animation: pulseReady 1.5s infinite alternate;
 }
 
 .btn-unlock.ready:hover {
-  background: var(--primary-hover);
   transform: translateY(-1px);
+  box-shadow: 0 6px 24px rgba(59, 130, 246, 0.6);
 }
 
 /* ========================================================= */
@@ -364,13 +430,14 @@ body {
   border: 1px solid rgba(59, 130, 246, 0.25);
   border-radius: 24px;
   padding: 36px 32px;
-  box-shadow: 0 30px 90px rgba(0, 0, 0, 0.95), 0 0 40px rgba(59, 130, 246, 0.15);
+  box-shadow: 0 30px 90px rgba(0, 0, 0, 0.95), 0 0 50px rgba(6, 182, 212, 0.15);
   display: flex;
   flex-direction: column;
   align-items: center;
   text-align: center;
   gap: 24px;
   animation: breathingCardFade 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  position: relative;
 }
 
 .breathing-header {
@@ -387,7 +454,7 @@ body {
   color: var(--accent-cyan);
   background: rgba(6, 182, 212, 0.12);
   border: 1px solid rgba(6, 182, 212, 0.3);
-  padding: 3px 10px;
+  padding: 3px 12px;
   border-radius: 9999px;
   text-transform: uppercase;
 }
@@ -408,64 +475,78 @@ body {
 /* Animated Breathing Orb */
 .breathing-orb-container {
   position: relative;
-  width: 180px;
-  height: 180px;
+  width: 200px;
+  height: 200px;
   display: flex;
   align-items: center;
   justify-content: center;
-  margin: 12px 0;
+  margin: 8px 0;
 }
 
 .breathing-aura {
   position: absolute;
   inset: 0;
   border-radius: 50%;
-  background: radial-gradient(circle, rgba(6, 182, 212, 0.3) 0%, rgba(59, 130, 246, 0.05) 70%, transparent 100%);
-  filter: blur(12px);
+  background: radial-gradient(circle, rgba(6, 182, 212, 0.35) 0%, rgba(59, 130, 246, 0.08) 70%, transparent 100%);
+  filter: blur(14px);
   transform: scale(0.9);
-  transition: transform 4s cubic-bezier(0.4, 0, 0.2, 1), opacity 4s ease;
+  transition: transform 4s cubic-bezier(0.4, 0, 0.2, 1), opacity 4s ease, background 1s ease;
 }
 
 .breathing-circle {
   position: relative;
-  width: 130px;
-  height: 130px;
+  width: 140px;
+  height: 140px;
   border-radius: 50%;
   background: radial-gradient(circle at 35% 35%, #38BDF8 0%, #0284C7 60%, #0369A1 100%);
-  border: 2px solid rgba(255, 255, 255, 0.3);
-  box-shadow: 0 10px 30px rgba(2, 132, 199, 0.5);
+  border: 2px solid rgba(255, 255, 255, 0.35);
+  box-shadow: 0 10px 35px rgba(2, 132, 199, 0.5);
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   transform: scale(0.85);
-  transition: transform 4s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: transform 4s cubic-bezier(0.4, 0, 0.2, 1), background 1s ease;
 }
 
+/* Phase Transitions */
 .breathing-circle.inhale {
   transform: scale(1.3);
+  background: radial-gradient(circle at 35% 35%, #38BDF8 0%, #0284C7 60%, #0369A1 100%);
 }
 
 .breathing-aura.inhale {
   transform: scale(1.45);
   opacity: 0.9;
+  background: radial-gradient(circle, rgba(56, 189, 248, 0.4) 0%, rgba(6, 182, 212, 0.1) 70%, transparent 100%);
 }
 
 .breathing-circle.hold {
   transform: scale(1.3);
+  background: radial-gradient(circle at 35% 35%, #FBBF24 0%, #D97706 60%, #B45309 100%);
+  box-shadow: 0 10px 35px rgba(217, 119, 6, 0.5);
+}
+
+.breathing-aura.hold {
+  transform: scale(1.45);
+  opacity: 0.9;
+  background: radial-gradient(circle, rgba(251, 191, 36, 0.4) 0%, rgba(217, 119, 6, 0.1) 70%, transparent 100%);
 }
 
 .breathing-circle.exhale {
   transform: scale(0.85);
+  background: radial-gradient(circle at 35% 35%, #C084FC 0%, #9333EA 60%, #7E22CE 100%);
+  box-shadow: 0 10px 30px rgba(147, 51, 234, 0.4);
 }
 
 .breathing-aura.exhale {
   transform: scale(0.85);
   opacity: 0.3;
+  background: radial-gradient(circle, rgba(192, 132, 252, 0.3) 0%, rgba(147, 51, 234, 0.05) 70%, transparent 100%);
 }
 
 .breathing-phase-text {
-  font-size: 16px;
+  font-size: 17px;
   font-weight: 800;
   color: #FFFFFF;
   text-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
@@ -474,7 +555,7 @@ body {
 .breathing-phase-sub {
   font-size: 11px;
   font-weight: 700;
-  color: rgba(255, 255, 255, 0.8);
+  color: rgba(255, 255, 255, 0.85);
 }
 
 /* Redirect Box */
@@ -485,7 +566,7 @@ body {
   background: rgba(255, 255, 255, 0.04);
   border: 1px solid rgba(255, 255, 255, 0.08);
   border-radius: 9999px;
-  padding: 8px 16px;
+  padding: 8px 18px;
   font-size: 13px;
   color: #E2E8F0;
 }
@@ -507,6 +588,7 @@ body {
   font-size: 13px;
 }
 
+/* Animations */
 @keyframes fadeIn {
   from { opacity: 0; transform: scale(0.98); }
   to { opacity: 1; transform: scale(1); }
@@ -522,6 +604,16 @@ body {
   50% { opacity: 0.4; transform: scale(1.15); }
 }
 
+@keyframes pulseUrgent {
+  0% { transform: scale(1); }
+  100% { transform: scale(1.05); }
+}
+
+@keyframes pulseReady {
+  0% { box-shadow: 0 4px 16px rgba(59, 130, 246, 0.4); }
+  100% { box-shadow: 0 6px 24px rgba(59, 130, 246, 0.7); }
+}
+
 .shake {
   animation: shake 0.3s ease-in-out;
 }
@@ -531,3 +623,4 @@ body {
   25% { transform: translateX(-6px); }
   75% { transform: translateX(6px); }
 }
+

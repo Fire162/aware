@@ -178,6 +178,7 @@ function resetIdleTimer(): void {
   idleSeconds = 0;
   if (idleIndicator) {
     idleIndicator.textContent = 'Active';
+    idleIndicator.className = 'idle-indicator';
   }
 }
 
@@ -191,6 +192,13 @@ function startInactivityWatchdog(): void {
 
     if (idleIndicator) {
       idleIndicator.textContent = `Idle: ${idleSeconds}s / ${IDLE_LIMIT}s`;
+      if (idleSeconds >= 15) {
+        idleIndicator.className = 'idle-indicator idle-urgent';
+      } else if (idleSeconds >= 10) {
+        idleIndicator.className = 'idle-indicator idle-warning';
+      } else {
+        idleIndicator.className = 'idle-indicator';
+      }
     }
 
     if (idleSeconds >= IDLE_LIMIT) {
