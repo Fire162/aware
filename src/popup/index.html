@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Aware</title>
+  <title>Aware Hardcore</title>
   <link rel="stylesheet" href="./popup.css" />
 </head>
 <body>
@@ -14,13 +14,13 @@
         <div class="brand-dot"></div>
         <h1>AWARE</h1>
       </div>
-      <div class="badge-guard">24/7 Active</div>
+      <div class="badge-hardcore">HARDCORE GUARD</div>
     </header>
 
     <!-- Navigation Tabs -->
     <nav class="nav-tabs">
       <button class="tab-btn active" data-tab="rules">🛡️ Rules</button>
-      <button class="tab-btn" data-tab="mantra">🎯 Mantra</button>
+      <button class="tab-btn" data-tab="pledge">📜 Pledge</button>
       <button class="tab-btn" data-tab="stats">📊 Stats</button>
       <button class="tab-btn" data-tab="settings">⚙️ Config</button>
     </nav>
@@ -29,10 +29,10 @@
     <main class="tab-content">
       <!-- Tab 1: Rules & Guard -->
       <section id="tab-rules" class="tab-pane active">
-        <!-- Quick Add Current Site -->
+        <!-- Current Tab Card -->
         <div id="current-site-card" class="card current-site-box">
           <div class="current-site-info">
-            <span class="label">Current Tab</span>
+            <span class="label">Active Tab</span>
             <span id="current-domain-text" class="domain-name">checking...</span>
           </div>
           <button id="btn-quick-add" class="btn btn-sm btn-primary">Add to Guard</button>
@@ -43,10 +43,10 @@
           <input
             type="text"
             id="input-new-domain"
-            placeholder="e.g. news.ycombinator.com"
+            placeholder="e.g. instagram.com or twitch.tv"
             required
           />
-          <button type="submit" class="btn btn-primary">Add</button>
+          <button type="submit" class="btn btn-primary">Guard</button>
         </form>
 
         <!-- Rules List -->
@@ -54,25 +54,30 @@
           <span>Protected Sites (<span id="rule-count">0</span>)</span>
         </div>
         <div id="rules-list" class="rules-list">
-          <!-- Dynamic rules injected here -->
+          <!-- Injected dynamically -->
         </div>
       </section>
 
-      <!-- Tab 2: Focus Mantra -->
-      <section id="tab-mantra" class="tab-pane">
+      <!-- Tab 2: 200+ Word Commitment Pledge -->
+      <section id="tab-pledge" class="tab-pane">
         <div class="card">
-          <label for="mantra-input" class="label">Active Focus Mantra / Goal</label>
-          <p class="subtext">This will be displayed in your floating nudge and roadblock.</p>
-          <textarea id="mantra-input" rows="3" placeholder="What are you focusing on today?"></textarea>
+          <div class="pledge-header-row">
+            <span class="label">Hardcore Commitment Pledge</span>
+            <span id="pledge-word-count" class="badge-count">203 words</span>
+          </div>
+          <p class="subtext">This exact text must be typed manually on canvas to unlock access.</p>
+          <textarea id="pledge-input" rows="7" placeholder="Type or customize your commitment pledge..."></textarea>
           <div class="actions-row">
-            <button id="btn-save-mantra" class="btn btn-primary">Save Mantra</button>
+            <button id="btn-reset-pledge" class="btn btn-sm btn-secondary">Reset to Default (203w)</button>
+            <button id="btn-save-pledge" class="btn btn-sm btn-primary">Save Pledge</button>
           </div>
         </div>
 
-        <div class="card preset-mantras-box">
-          <span class="label">Inspiration Presets</span>
-          <div id="preset-mantras-list" class="preset-mantras-list">
-            <!-- Dynamic presets -->
+        <div class="card">
+          <label for="mantra-input" class="label">Personal Focus Mantra</label>
+          <input type="text" id="mantra-input" placeholder="Protect your focus and study..." />
+          <div class="actions-row" style="margin-top: 6px;">
+            <button id="btn-save-mantra" class="btn btn-sm btn-primary">Save Mantra</button>
           </div>
         </div>
       </section>
@@ -81,56 +86,78 @@
       <section id="tab-stats" class="tab-pane">
         <div class="stats-grid">
           <div class="stat-card">
-            <span class="stat-val" id="stat-time">0m</span>
-            <span class="stat-lbl">Time on Distractions</span>
-          </div>
-          <div class="stat-card">
-            <span class="stat-val" id="stat-nudges">0</span>
-            <span class="stat-lbl">Nudges Shown</span>
+            <span class="stat-val" id="stat-redirects">0</span>
+            <span class="stat-lbl">Focus Redirects</span>
           </div>
           <div class="stat-card">
             <span class="stat-val" id="stat-roadblocks">0</span>
-            <span class="stat-lbl">Roadblocks</span>
+            <span class="stat-lbl">Barriers Hit</span>
           </div>
           <div class="stat-card">
             <span class="stat-val" id="stat-closed">0</span>
             <span class="stat-lbl">Tabs Closed</span>
           </div>
+          <div class="stat-card">
+            <span class="stat-val" id="stat-time">0s</span>
+            <span class="stat-lbl">Distraction Dwell</span>
+          </div>
         </div>
 
         <div class="card breakdown-card">
-          <span class="label">Today's Distraction Breakdown</span>
+          <span class="label">Today's Distraction Activity</span>
           <div id="breakdown-list" class="breakdown-list">
-            <p class="empty-state">No distraction activity recorded today. Great job staying focused!</p>
+            <p class="empty-state">Zero distractions accessed today. Pure deep work!</p>
           </div>
         </div>
       </section>
 
-      <!-- Tab 4: Settings -->
+      <!-- Tab 4: Configuration & Redirection -->
       <section id="tab-settings" class="tab-pane">
         <div class="card settings-card">
+          <!-- Focus Site Redirect -->
           <div class="setting-item">
             <div class="setting-text">
-              <span class="setting-title">Roadblock Grace Period</span>
-              <span class="subtext">How long before the full roadblock overlay appears.</span>
+              <span class="setting-title">Productive Focus Site URL</span>
+              <span class="subtext">Where to instantly redirect when you press Esc or click "Return to Work".</span>
             </div>
-            <select id="select-grace-period" class="select-input">
-              <option value="60">1 Minute</option>
-              <option value="120">2 Minutes (Default)</option>
-              <option value="180">3 Minutes</option>
-              <option value="300">5 Minutes</option>
+            <input type="url" id="input-focus-site" placeholder="https://github.com or https://leetcode.com" />
+            <button id="btn-save-focus-site" class="btn btn-sm btn-primary" style="align-self: flex-start; margin-top: 4px;">Update Focus Site</button>
+          </div>
+
+          <!-- Max Extension Time -->
+          <div class="setting-item">
+            <div class="setting-text">
+              <span class="setting-title">Max Session Pass Limit</span>
+              <span class="subtext">Strict ceiling for temporary passes after typing the full pledge.</span>
+            </div>
+            <select id="select-max-pass" class="select-input">
+              <option value="10">10 Seconds</option>
+              <option value="15" selected>15 Seconds (Strict Max)</option>
             </select>
           </div>
 
-          <div class="setting-item">
+          <!-- YouTube Shorts Blocker Toggle -->
+          <div class="setting-item switch-row">
             <div class="setting-text">
-              <span class="setting-title">Unblocking Friction</span>
-              <span class="subtext">Exercise required to unlock a 5-minute study pass.</span>
+              <span class="setting-title">Block YouTube Shorts</span>
+              <span class="subtext">Purge all Shorts reels, shelves, and sidebar entry points from YouTube.</span>
             </div>
-            <select id="select-friction-type" class="select-input">
-              <option value="breathing">10-Second Mindfulness Breath</option>
-              <option value="pledge">Type Intention Pledge</option>
-            </select>
+            <label class="switch">
+              <input type="checkbox" id="toggle-block-shorts" checked />
+              <span class="slider"></span>
+            </label>
+          </div>
+
+          <!-- Anti-OCR Mesh Toggle -->
+          <div class="setting-item switch-row">
+            <div class="setting-text">
+              <span class="setting-title">Anti-OCR Security Canvas</span>
+              <span class="subtext">Render pledge on canvas with security mesh to block screen OCR & copying.</span>
+            </div>
+            <label class="switch">
+              <input type="checkbox" id="toggle-anti-ocr" checked />
+              <span class="slider"></span>
+            </label>
           </div>
         </div>
       </section>
@@ -138,7 +165,7 @@
 
     <!-- Footer -->
     <footer class="popup-footer">
-      <span>Aware • Guarding your focus</span>
+      <span>Aware Hardcore • Zero Compromise</span>
       <span id="save-indicator" class="save-indicator"></span>
     </footer>
   </div>

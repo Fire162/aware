@@ -5,6 +5,18 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.1.0] - 2026-09-11 02:06 IST
+
+### Added
+* Hardcore immediate fullscreen takeover at `document_start` completely blocking site rendering and thumbnail flashes.
+* Canvas-rendered 203-word pledge with anti-OCR geometric mesh and text non-selection.
+* Anti-cheat input protections blocking clipboard paste, drag-and-drop, context menus, and keyboard paste shortcuts.
+* Real-time character-by-character validation engine with live word count tracking and zero-tolerance typo detection.
+* Productive Focus Site redirection (redirecting directly to user-defined study/work URL upon pressing Esc or clicking Return to Work).
+* Strict 15-second maximum session extension limit with live countdown HUD.
+* Built-in YouTube Shorts purger removing Shorts shelves, sidebar entry links, and redirecting Shorts video URLs.
+* Expanded dashboard customization with Focus Site manager, pledge editor, and security toggles.
+
 ## [1.0.0] - 2026-09-11 01:53 IST
 
 ### Added

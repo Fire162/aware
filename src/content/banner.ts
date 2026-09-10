@@ -1,103 +1,79 @@
-export interface BannerOptions {
+export interface PassHudOptions {
   domain: string;
-  mantra: string;
-  initialElapsedSeconds: number;
-  onCloseTab: () => void;
+  totalSeconds: number;
+  initialRemainingSeconds: number;
+  onExpire: () => void;
+  onRedirectToFocus: () => void;
 }
 
-export function formatTime(seconds: number): string {
-  const mins = Math.floor(seconds / 60);
-  const secs = seconds % 60;
-  return `${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
-}
-
-export class AwareBanner {
+export class AwarePassHud {
   private element: HTMLElement;
-  private timerSpan: HTMLElement;
-  private elapsedSeconds: number;
-  private isMinimized: boolean = false;
+  private remaining: number;
+  private total: number;
+  private timerId: number | null = null;
+  private timeSpan: HTMLElement;
+  private progressFill: HTMLElement;
 
-  constructor(options: BannerOptions) {
-    this.elapsedSeconds = options.initialElapsedSeconds;
+  constructor(options: PassHudOptions) {
+    this.total = options.totalSeconds;
+    this.remaining = options.initialRemainingSeconds;
 
     this.element = document.createElement('div');
-    this.element.className = 'aware-banner-container';
+    this.element.className = 'aware-pass-hud';
 
     this.element.innerHTML = `
-      <div class="aware-pulse-badge">
-        <div class="aware-dot"></div>
-        <span>AWARE</span>
+      <div class="aware-hud-header">
+        <span class="aware-hud-pulse"></span>
+        <span class="aware-hud-title">AWARE • TEMPORARY PASS</span>
+        <span class="aware-hud-timer">${this.remaining}s</span>
       </div>
-      <div class="aware-banner-content">
-        <div class="aware-banner-header">
-          <span>${this.escapeHtml(options.domain)}</span>
-          <span>•</span>
-          <span class="aware-timer">${formatTime(this.elapsedSeconds)}</span>
-        </div>
-        <div class="aware-mantra-text" title="${this.escapeHtml(options.mantra)}">
-          ${this.escapeHtml(options.mantra)}
-        </div>
+      <div class="aware-hud-track">
+        <div class="aware-hud-fill" style="width: 100%;"></div>
       </div>
-      <div class="aware-banner-actions">
-        <button class="aware-btn aware-btn-primary aware-btn-close" title="Close this distracting tab (Esc)">
-          Close Tab
-        </button>
-        <button class="aware-btn aware-btn-secondary aware-btn-min" title="Minimize reminder">
-          ✕
-        </button>
-      </div>
+      <button class="aware-hud-btn" title="Return to Focus Site">
+        Return to Focus Site (Esc)
+      </button>
     `;
 
-    this.timerSpan = this.element.querySelector('.aware-timer') as HTMLElement;
+    this.timeSpan = this.element.querySelector('.aware-hud-timer') as HTMLElement;
+    this.progressFill = this.element.querySelector('.aware-hud-fill') as HTMLElement;
 
-    const closeBtn = this.element.querySelector('.aware-btn-close');
-    closeBtn?.addEventListener('click', (e) => {
-      e.stopPropagation();
-      options.onCloseTab();
+    const exitBtn = this.element.querySelector('.aware-hud-btn');
+    exitBtn?.addEventListener('click', () => {
+      options.onRedirectToFocus();
     });
 
-    const minBtn = this.element.querySelector('.aware-btn-min');
-    minBtn?.addEventListener('click', (e) => {
-      e.stopPropagation();
-      this.toggleMinimize();
-    });
-
-    this.element.addEventListener('click', () => {
-      if (this.isMinimized) {
-        this.toggleMinimize();
-      }
-    });
+    this.startCountdown(options.onExpire);
   }
 
   public getElement(): HTMLElement {
     return this.element;
   }
 
-  public updateTime(seconds: number): void {
-    this.elapsedSeconds = seconds;
-    if (this.timerSpan) {
-      this.timerSpan.textContent = formatTime(seconds);
-    }
-  }
+  private startCountdown(onExpire: () => void): void {
+    this.timerId = window.setInterval(() => {
+      this.remaining -= 1;
+      const pct = Math.max(0, Math.round((this.remaining / this.total) * 100));
 
-  public toggleMinimize(): void {
-    this.isMinimized = !this.isMinimized;
-    if (this.isMinimized) {
-      this.element.classList.add('minimized');
-      this.element.title = `Aware: ${formatTime(this.elapsedSeconds)} on this site. Click to expand.`;
-    } else {
-      this.element.classList.remove('minimized');
-      this.element.title = '';
-    }
+      if (this.timeSpan) {
+        this.timeSpan.textContent = `${this.remaining}s`;
+      }
+      if (this.progressFill) {
+        this.progressFill.style.width = `${pct}%`;
+      }
+
+      if (this.remaining <= 0) {
+        this.destroy();
+        onExpire();
+      }
+    }, 1000);
   }
 
   public destroy(): void {
+    if (this.timerId) {
+      clearInterval(this.timerId);
+      this.timerId = null;
+    }
     this.element.remove();
-  }
-
-  private escapeHtml(str: string): string {
-    const div = document.createElement('div');
-    div.textContent = str;
-    return div.innerHTML;
   }
 }

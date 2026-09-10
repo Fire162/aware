@@ -12,8 +12,11 @@
 
 **Aware** is a minimalist, intentional Manifest V3 Chromium browser extension designed to curb mindless digital distractions and protect focus during work and study sessions. It operates continuously (24/7) in the background without requiring manual session starts, applying a **two-tiered intervention model**:
 
-1. **Tier 1 (Gentle Floating Nudge / Banner)**: Injected via **Closed Shadow DOM** upon visiting a distracting domain. Displays dwell duration (`01:24`), active focus mantra, and an instant tab closure trigger (`Esc`).
-2. **Tier 2 (Mindful Roadblock & Intentional Friction Gate)**: Activates after a configurable grace period (default: 2 minutes / 120s). Fullscreen blurred backdrop (`backdrop-filter: blur(28px)`) halts browsing and presents a 10-second guided breathing mindfulness pause or typing a focus commitment pledge before granting a timed 5-minute study pass.
+1. **Immediate Fullscreen Takeover (`document_start`)**: Injected before page DOM finishes rendering. Distracting websites are immediately covered by a 100% solid opaque barrier (`#080C14`, z-index 2147483647).
+2. **Canvas Anti-OCR & Anti-Copy Barrier**: The 203-word commitment pledge is rendered onto an HTML5 `<canvas>` with anti-OCR background mesh. Clipboard paste, drag-and-drop, context menus, and selection are blocked.
+3. **Productive Focus Site Redirection**: Pressing <kbd>Esc</kbd> or clicking "Return to Focus Site" redirects the user to their configured productive workspace (e.g. `https://github.com` or `https://leetcode.com`).
+4. **Strict 15-Second Temporary Pass**: Typing the exact 203 words with 100% accuracy unlocks access for **strictly at most 15 seconds**, monitored by a live countdown HUD that re-locks the screen upon expiry.
+5. **Integrated YouTube Shorts Purger**: Strips YouTube Shorts shelves, reels, and sidebar entry points without external traces.
 
 ---
 
@@ -21,12 +24,14 @@
 
 ```
 /root/aware/
-├── manifest.json            # Chrome MV3 manifest configuration
+├── manifest.json            # Chrome MV3 manifest configuration (run_at: document_start)
 ├── package.json             # Scripts & dependencies (Vite, TypeScript, TSX)
 ├── tsconfig.json            # Strict TypeScript configuration
 ├── AGENT.md                 # Agent knowledge base & architecture guide
 ├── README.md                # Comprehensive documentation with diagrams & badges
-├── .gitignore               # Ignored build outputs and dependencies
+├── CHANGELOG.md             # Keep a Changelog releases in IST
+├── CONTRIBUTING.md          # Developer workflow guidelines
+├── LICENSE                  # MIT License
 ├── scripts/
 │   ├── build.ts             # Programmatic Vite compiler (bundles popup, content IIFE, worker ES)
 │   └── generate-icons.ts    # Pure Node.js PNG icon generator for public/icons
@@ -35,21 +40,22 @@
 ├── src/
 │   ├── vite-env.d.ts        # Ambient typing for inline CSS imports
 │   ├── background/
-│   │   └── service-worker.ts # Tab tracking, session timer, storage synchronization, badge updates
+│   │   └── service-worker.ts # Tab tracking, session timer, focus redirects, strict 15s passes
 │   ├── content/
-│   │   ├── content.ts       # Content script entry, Shadow DOM lifecycle, URL observer
-│   │   ├── banner.ts        # Tier 1 floating pill nudge component
-│   │   ├── roadblock.ts     # Tier 2 full-screen mindful roadblock with friction gates
-│   │   └── styles.css       # Scoped Shadow Root styles (zero collision with host site CSS)
+│   │   ├── content.ts       # Content script entry (document_start), Shorts filter, HUD/guard lifecycle
+│   │   ├── banner.ts        # 15-second temporary pass countdown HUD
+│   │   ├── roadblock.ts     # Anti-OCR Canvas hardcore roadblock with real-time typing engine
+│   │   └── styles.css       # Scoped Shadow Root styles (solid opaque barrier, zero leaks)
 │   ├── popup/
-│   │   ├── index.html       # Extension popup layout (Rules, Mantra, Analytics, Settings)
+│   │   ├── index.html       # Hardcore popup layout (Rules, 203w Pledge, Analytics, Settings)
 │   │   ├── popup.ts         # Reactive popup controller & storage bindings
 │   │   └── popup.css        # Popup theme styles
 │   ├── storage/
 │   │   ├── types.ts         # TypeScript definitions (rules, settings, stats, message protocol)
 │   │   └── store.ts         # Chrome storage wrapper with fallback defaults
 │   └── utils/
-│       ├── presets.ts       # Default distraction presets (YouTube, Reddit, X, TikTok, etc.)
+│       ├── presets.ts       # Default 203-word pledge & distraction presets
+│       ├── shorts.ts        # YouTube Shorts DOM purger utility
 │       └── matcher.ts       # Domain & wildcard path pattern matcher
 └── tests/
     └── matcher.test.ts      # Unit tests for domain, subdomain, and path pattern rules

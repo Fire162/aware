@@ -1,5 +1,4 @@
 import {
-  AwarenessState,
   DistractionRule,
   DayFocusStats,
   UserSettings,
@@ -32,7 +31,11 @@ export async function initializeStorage(): Promise<void> {
 
   if (!data[STORAGE_KEYS.SETTINGS]) {
     updates[STORAGE_KEYS.SETTINGS] = DEFAULT_SETTINGS;
+  } else {
+    // Merge new setting defaults
+    updates[STORAGE_KEYS.SETTINGS] = { ...DEFAULT_SETTINGS, ...data[STORAGE_KEYS.SETTINGS] };
   }
+
   if (!data[STORAGE_KEYS.RULES]) {
     updates[STORAGE_KEYS.RULES] = DEFAULT_PRESET_RULES;
   }
@@ -74,7 +77,6 @@ export async function addRule(domain: string, name?: string): Promise<Distractio
   const rules = await getRules();
   const cleanDomain = domain.toLowerCase().replace(/^(https?:\/\/)?(www\.)?/, '').replace(/\/.*$/, '');
   
-  // Check if exists
   const existing = rules.find((r) => r.domain.toLowerCase() === cleanDomain);
   if (existing) {
     existing.enabled = true;
@@ -122,6 +124,7 @@ export async function getStats(date: string = getTodayKey()): Promise<DayFocusSt
       interventionsTriggered: 0,
       roadblocksTriggered: 0,
       tabsClosed: 0,
+      redirectsToFocus: 0,
       domainBreakdown: {},
     };
   }
@@ -144,12 +147,14 @@ export async function recordStats(
     interventionsTriggered: 0,
     roadblocksTriggered: 0,
     tabsClosed: 0,
+    redirectsToFocus: 0,
     domainBreakdown: {},
   };
 
   if (delta.interventionsTriggered) current.interventionsTriggered += delta.interventionsTriggered;
   if (delta.roadblocksTriggered) current.roadblocksTriggered += delta.roadblocksTriggered;
   if (delta.tabsClosed) current.tabsClosed += delta.tabsClosed;
+  if (delta.redirectsToFocus) current.redirectsToFocus += delta.redirectsToFocus;
 
   if (dwellSeconds && dwellSeconds > 0) {
     current.totalDistractionSeconds += dwellSeconds;
@@ -163,21 +168,22 @@ export async function recordStats(
   return current;
 }
 
-export async function grantPass(domain: string, minutes: number): Promise<void> {
+export async function grantPass(domain: string, seconds: number): Promise<void> {
   const res = await chrome.storage.local.get(STORAGE_KEYS.PASSES);
   const passes: Record<string, number> = res[STORAGE_KEYS.PASSES] || {};
-  passes[domain] = Date.now() + minutes * 60 * 1000;
+  passes[domain] = Date.now() + seconds * 1000;
   await chrome.storage.local.set({ [STORAGE_KEYS.PASSES]: passes });
 }
 
-export async function isPassActive(domain: string): Promise<boolean> {
+export async function getRemainingPassSeconds(domain: string): Promise<number> {
   const res = await chrome.storage.local.get(STORAGE_KEYS.PASSES);
   const passes: Record<string, number> = res[STORAGE_KEYS.PASSES] || {};
   const expiry = passes[domain];
-  if (!expiry) return false;
-  if (Date.now() < expiry) return true;
-  // Expired, clean up
+  if (!expiry) return 0;
+  const remaining = Math.round((expiry - Date.now()) / 1000);
+  if (remaining > 0) return remaining;
+
   delete passes[domain];
   await chrome.storage.local.set({ [STORAGE_KEYS.PASSES]: passes });
-  return false;
+  return 0;
 }

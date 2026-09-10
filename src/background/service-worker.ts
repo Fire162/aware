@@ -4,7 +4,7 @@ import {
   getSettings,
   recordStats,
   grantPass,
-  isPassActive,
+  getRemainingPassSeconds,
 } from '../storage/store';
 import { matchRule, extractHostname } from '../utils/matcher';
 import { ContentToBgMessage, PageStatusResponse } from '../storage/types';
@@ -14,14 +14,13 @@ interface ActiveSession {
   tabId: number;
   domain: string;
   startTime: number;
-  lastHeartbeat: number;
 }
 
 const activeSessions = new Map<number, ActiveSession>();
 
 chrome.runtime.onInstalled.addListener(async () => {
   await initializeStorage();
-  console.log('[Aware] Initialized extension storage and rules.');
+  console.log('[Aware] Initialized storage, rules, and settings.');
 });
 
 // Clean up sessions when tab is closed
@@ -42,7 +41,7 @@ chrome.tabs.onActivated.addListener(async (activeInfo) => {
     const tab = await chrome.tabs.get(activeInfo.tabId);
     handleTabNavigation(activeInfo.tabId, tab.url || '');
   } catch (err) {
-    // Tab might be closing
+    // Tab may be closing
   }
 });
 
@@ -65,22 +64,20 @@ async function handleTabNavigation(tabId: number, url: string) {
   const domain = extractHostname(url);
 
   if (rule) {
-    const passed = await isPassActive(domain);
-    if (passed) {
-      chrome.action.setBadgeText({ tabId, text: 'PASS' });
+    const remainingPass = await getRemainingPassSeconds(domain);
+    if (remainingPass > 0) {
+      chrome.action.setBadgeText({ tabId, text: `${remainingPass}s` });
       chrome.action.setBadgeBackgroundColor({ tabId, color: '#10B981' });
     } else {
       chrome.action.setBadgeText({ tabId, text: '!' });
-      chrome.action.setBadgeBackgroundColor({ tabId, color: '#F59E0B' });
+      chrome.action.setBadgeBackgroundColor({ tabId, color: '#EF4444' });
     }
 
-    // Start or update active session
     if (!activeSessions.has(tabId) || activeSessions.get(tabId)?.domain !== domain) {
       activeSessions.set(tabId, {
         tabId,
         domain,
         startTime: Date.now(),
-        lastHeartbeat: Date.now(),
       });
     }
   } else {
@@ -111,14 +108,18 @@ chrome.runtime.onMessage.addListener((message: ContentToBgMessage, sender, sendR
             isDistracting: false,
             elapsedSeconds: 0,
             mantra: settings.focusMantra,
-            gracePeriodSeconds: settings.gracePeriodSeconds,
-            frictionType: settings.frictionType,
+            focusSiteUrl: settings.focusSiteUrl,
+            maxPassSeconds: settings.maxPassSeconds,
+            blockShorts: settings.blockShorts,
+            pledgeText: settings.customPledgeText,
+            antiOcrEnabled: settings.antiOcrEnabled,
             isPassed: false,
+            passRemainingSeconds: 0,
           } as PageStatusResponse);
           return;
         }
 
-        const passed = await isPassActive(domain);
+        const remainingPass = await getRemainingPassSeconds(domain);
         const tabId = sender.tab?.id;
         let elapsedSeconds = 0;
 
@@ -130,7 +131,6 @@ chrome.runtime.onMessage.addListener((message: ContentToBgMessage, sender, sendR
             tabId,
             domain,
             startTime: Date.now(),
-            lastHeartbeat: Date.now(),
           });
         }
 
@@ -139,16 +139,38 @@ chrome.runtime.onMessage.addListener((message: ContentToBgMessage, sender, sendR
           rule,
           elapsedSeconds,
           mantra: settings.focusMantra,
-          gracePeriodSeconds: settings.gracePeriodSeconds,
-          frictionType: settings.frictionType,
-          isPassed: passed,
+          focusSiteUrl: settings.focusSiteUrl,
+          maxPassSeconds: settings.maxPassSeconds,
+          blockShorts: settings.blockShorts,
+          pledgeText: settings.customPledgeText,
+          antiOcrEnabled: settings.antiOcrEnabled,
+          isPassed: remainingPass > 0,
+          passRemainingSeconds: remainingPass,
         } as PageStatusResponse);
         return;
       }
 
+      if (message.type === 'REDIRECT_TO_FOCUS') {
+        const settings = await getSettings();
+        const tabId = sender.tab?.id;
+        if (tabId) {
+          const session = activeSessions.get(tabId);
+          if (session) {
+            const elapsed = Math.round((Date.now() - session.startTime) / 1000);
+            await recordStats({ redirectsToFocus: 1, tabsClosed: 1 }, session.domain, elapsed);
+            activeSessions.delete(tabId);
+          } else {
+            await recordStats({ redirectsToFocus: 1 });
+          }
+          await chrome.tabs.update(tabId, { url: settings.focusSiteUrl || 'https://github.com' });
+        }
+        sendResponse({ success: true });
+        return;
+      }
+
       if (message.type === 'CLOSE_TAB') {
-        if (sender.tab?.id) {
-          const tabId = sender.tab.id;
+        const tabId = sender.tab?.id;
+        if (tabId) {
           const session = activeSessions.get(tabId);
           if (session) {
             const elapsed = Math.round((Date.now() - session.startTime) / 1000);
@@ -170,31 +192,30 @@ chrome.runtime.onMessage.addListener((message: ContentToBgMessage, sender, sendR
       }
 
       if (message.type === 'EVENT_LOG') {
-        if (message.event === 'nudge_shown') {
-          await recordStats({ interventionsTriggered: 1 }, message.domain);
-        } else if (message.event === 'roadblock_shown') {
-          await recordStats({ roadblocksTriggered: 1 }, message.domain);
-        } else if (message.event === 'tab_closed') {
-          await recordStats({ tabsClosed: 1 }, message.domain);
+        if (message.event === 'roadblock_shown') {
+          await recordStats({ roadblocksTriggered: 1, interventionsTriggered: 1 }, message.domain);
         }
         sendResponse({ success: true });
         return;
       }
 
       if (message.type === 'GRANT_PASS') {
-        await grantPass(message.domain, message.minutes);
+        const settings = await getSettings();
+        // Strictly cap pass duration to maxPassSeconds (e.g. 15s)
+        const duration = Math.min(message.seconds, settings.maxPassSeconds || 15);
+        await grantPass(message.domain, duration);
         if (sender.tab?.id) {
-          chrome.action.setBadgeText({ tabId: sender.tab.id, text: 'PASS' });
+          chrome.action.setBadgeText({ tabId: sender.tab.id, text: `${duration}s` });
           chrome.action.setBadgeBackgroundColor({ tabId: sender.tab.id, color: '#10B981' });
         }
-        sendResponse({ success: true });
+        sendResponse({ success: true, duration });
         return;
       }
     } catch (error) {
-      console.error('[Aware] Background handler error:', error);
+      console.error('[Aware] Background worker error:', error);
       sendResponse({ error: String(error) });
     }
   })();
 
-  return true; // Keep asynchronous channel open
+  return true;
 });

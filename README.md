@@ -22,12 +22,13 @@
 
 ## 🌟 Key Highlights
 
-* **Tiered Escalation System**: Starts with a gentle, non-intrusive floating nudge. If you remain on a distracting site beyond your grace period, it seamlessly transitions into a full-screen mindful roadblock.
-* **Closed Shadow DOM Isolation**: Guarantees zero CSS leaks or styling collisions with complex host web pages (such as YouTube, Twitter/X, and Reddit).
-* **Intentional Friction Gates**: Choose between a 10-second guided breathing mindfulness pause or typing a focus commitment pledge before obtaining a temporary study pass.
-* **Continuous 24/7 Protection**: Always standing guard in the background without requiring manual session timers or configuration friction.
-* **Curated & Granular Rules**: Preloaded with popular distraction hubs (YouTube, Reddit, Instagram, X/Twitter, TikTok, Netflix, Twitch) with wildcard path matching (e.g. restrict `/shorts*` while keeping lecture playlists open).
-* **Daily Focus Analytics**: Visual breakdown of dwell time, interventions triggered, and mindful tab closures right in the popup dashboard.
+* **Immediate Fullscreen Barrier (`document_start`)**: Injected before target page DOM finishes rendering. The distracting website is 100% blocked behind an opaque guard screen with zero video or thumbnail flash.
+* **Canvas Anti-OCR & Anti-Copy Protection**: The 203-word commitment pledge is rendered onto an HTML5 `<canvas>` with anti-OCR geometric mesh. DOM text selection, clipboard copying, drag-and-drop, and context menus are completely suppressed.
+* **Brutal 203-Word Exact Typing Gate**: Requires character-by-character typing with zero typos, tracking real-time word progress (`X / 203 words`) before unlock is possible.
+* **Productive Focus Site Redirection**: Pressing <kbd>Esc</kbd> or clicking *"Return to Work"* instantly redirects the tab to your designated study/work site (e.g. `https://github.com` or `https://leetcode.com`).
+* **Strict 15-Second Session Ceiling**: Completing the pledge unlocks access for **strictly at most 15 seconds** with a high-urgency countdown HUD before the guard re-locks.
+* **Integrated YouTube Shorts Purger**: Automatically strips Shorts carousels, shelves, and navigation links from YouTube and redirects Shorts URLs.
+* **Closed Shadow DOM Isolation**: Guarantees zero CSS leaks or styling collisions with host web pages.
 
 ---
 
@@ -36,26 +37,28 @@
 ```mermaid
 flowchart TD
     subgraph Browser Context
-        UserTab["User navigates to website (e.g., youtube.com)"]
+        UserTab["User navigates to distracting site"]
         ServiceWorker["Background Service Worker (service-worker.ts)"]
-        ContentScript["Content Script (content.ts)"]
+        ContentScript["Content Script (content.ts at document_start)"]
+        ShortsFilter["Shorts DOM Purger"]
         ShadowRoot["Closed Shadow DOM Container"]
-        Storage["chrome.storage.local (Settings & Analytics)"]
+        Storage["chrome.storage.local (Rules, Settings & Stats)"]
     end
 
     UserTab -->|Navigation change| ServiceWorker
     ServiceWorker -->|Check domain rules| Storage
     Storage -->|Rule match detected| ServiceWorker
-    ServiceWorker -->|Transmit status| ContentScript
-    ContentScript -->|Attach isolated node| ShadowRoot
+    ServiceWorker -->|Transmit hardcore guard status| ContentScript
+    ContentScript -->|Purge Shorts elements| ShortsFilter
+    ContentScript -->|Attach opaque barrier| ShadowRoot
 
-    ShadowRoot -->|Tier 1: 0 - 120s| Banner["Floating Pill Nudge\n• Live dwell stopwatch\n• Focus mantra\n• Instant tab close"]
-    ShadowRoot -->|Tier 2: > 120s| Roadblock["Roadblock Overlay\n• Backdrop blur\n• 10s breathing circle\n• Focus pledge unlock"]
+    ShadowRoot -->|State: Guard Active| CanvasRoadblock["Canvas Anti-OCR Barrier\n• 203-word exact typing\n• Paste/drag blocked\n• Return to Focus Site (Esc)"]
+    ShadowRoot -->|State: Unlocked| PassHUD["15s Temporary Pass HUD\n• Live countdown\n• Re-locks upon expiry"]
 
-    ContentScript -->|Dwell heartbeats & tab closes| ServiceWorker
-    ServiceWorker -->|Persist daily stats| Storage
-    Popup["Extension Action Popup (popup.html)"] <-->|Manage rules, mantras & view metrics| Storage
-```
+    CanvasRoadblock -->|Click Return or Esc| Redirect["Redirect tab to Focus Site\n(e.g., https://github.com)"]
+    CanvasRoadblock -->|Type 203w 100%| GrantPass["Grant strictly max 15s access"]
+    GrantPass --> PassHUD
+    PassHUD -->|15s expires| CanvasRoadblock
 
 ---
 

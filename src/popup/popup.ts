@@ -7,7 +7,7 @@ import {
   saveSettings,
   getStats,
 } from '../storage/store';
-import { SAMPLE_MANTRAS } from '../utils/presets';
+import { DEFAULT_PLEDGE_TEXT } from '../utils/presets';
 import { extractHostname } from '../utils/matcher';
 import { DistractionRule } from '../storage/types';
 
@@ -23,18 +23,24 @@ const inputNewDomain = document.getElementById('input-new-domain') as HTMLInputE
 const rulesList = document.getElementById('rules-list') as HTMLElement;
 const ruleCount = document.getElementById('rule-count') as HTMLElement;
 
-const mantraInput = document.getElementById('mantra-input') as HTMLTextAreaElement;
+const pledgeInput = document.getElementById('pledge-input') as HTMLTextAreaElement;
+const pledgeWordCount = document.getElementById('pledge-word-count') as HTMLElement;
+const btnSavePledge = document.getElementById('btn-save-pledge') as HTMLButtonElement;
+const btnResetPledge = document.getElementById('btn-reset-pledge') as HTMLButtonElement;
+const mantraInput = document.getElementById('mantra-input') as HTMLInputElement;
 const btnSaveMantra = document.getElementById('btn-save-mantra') as HTMLButtonElement;
-const presetMantrasList = document.getElementById('preset-mantras-list') as HTMLElement;
 
-const statTime = document.getElementById('stat-time') as HTMLElement;
-const statNudges = document.getElementById('stat-nudges') as HTMLElement;
+const statRedirects = document.getElementById('stat-redirects') as HTMLElement;
 const statRoadblocks = document.getElementById('stat-roadblocks') as HTMLElement;
 const statClosed = document.getElementById('stat-closed') as HTMLElement;
+const statTime = document.getElementById('stat-time') as HTMLElement;
 const breakdownList = document.getElementById('breakdown-list') as HTMLElement;
 
-const selectGracePeriod = document.getElementById('select-grace-period') as HTMLSelectElement;
-const selectFrictionType = document.getElementById('select-friction-type') as HTMLSelectElement;
+const inputFocusSite = document.getElementById('input-focus-site') as HTMLInputElement;
+const btnSaveFocusSite = document.getElementById('btn-save-focus-site') as HTMLButtonElement;
+const selectMaxPass = document.getElementById('select-max-pass') as HTMLSelectElement;
+const toggleBlockShorts = document.getElementById('toggle-block-shorts') as HTMLInputElement;
+const toggleAntiOcr = document.getElementById('toggle-anti-ocr') as HTMLInputElement;
 const saveIndicator = document.getElementById('save-indicator') as HTMLElement;
 
 function showSavedIndicator(msg: string = 'Saved ✓'): void {
@@ -44,7 +50,12 @@ function showSavedIndicator(msg: string = 'Saved ✓'): void {
   }, 2000);
 }
 
-// Format seconds into readable duration
+function updatePledgeCount(): void {
+  const text = pledgeInput.value.trim();
+  const count = text ? text.split(/\s+/).length : 0;
+  pledgeWordCount.textContent = `${count} words`;
+}
+
 function formatDuration(seconds: number): string {
   if (seconds < 60) return `${seconds}s`;
   const mins = Math.floor(seconds / 60);
@@ -70,7 +81,7 @@ tabBtns.forEach((btn) => {
   });
 });
 
-// Load Current Tab Information
+// Load Current Tab
 async function loadCurrentTab(): Promise<void> {
   try {
     const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
@@ -87,7 +98,7 @@ async function loadCurrentTab(): Promise<void> {
         btnQuickAdd.classList.remove('btn-primary');
         btnQuickAdd.classList.add('btn-secondary');
       } else {
-        btnQuickAdd.textContent = 'Add to Guard';
+        btnQuickAdd.textContent = 'Guard Site';
         btnQuickAdd.disabled = false;
         btnQuickAdd.classList.remove('btn-secondary');
         btnQuickAdd.classList.add('btn-primary');
@@ -101,7 +112,7 @@ async function loadCurrentTab(): Promise<void> {
   }
 }
 
-// Render Distraction Rules List
+// Render Rules
 async function renderRules(): Promise<void> {
   const rules = await getRules();
   ruleCount.textContent = String(rules.length);
@@ -153,7 +164,7 @@ btnQuickAdd.addEventListener('click', async () => {
   await addRule(currentTabDomain);
   await renderRules();
   await loadCurrentTab();
-  showSavedIndicator('Added to Guard');
+  showSavedIndicator('Site Guarded');
 });
 
 // Custom Domain Form
@@ -169,24 +180,31 @@ addRuleForm.addEventListener('submit', async (e) => {
   }
 });
 
-// Load Mantra & Presets
-async function loadMantra(): Promise<void> {
+// Pledge and Mantra Logic
+async function loadPledgeAndMantra(): Promise<void> {
   const settings = await getSettings();
-  mantraInput.value = settings.focusMantra || '';
+  pledgeInput.value = settings.customPledgeText || DEFAULT_PLEDGE_TEXT;
+  updatePledgeCount();
 
-  presetMantrasList.innerHTML = '';
-  SAMPLE_MANTRAS.forEach((preset) => {
-    const pill = document.createElement('div');
-    pill.className = 'preset-mantra-pill';
-    pill.textContent = preset;
-    pill.addEventListener('click', async () => {
-      mantraInput.value = preset;
-      await saveSettings({ focusMantra: preset });
-      showSavedIndicator('Mantra updated');
-    });
-    presetMantrasList.appendChild(pill);
-  });
+  mantraInput.value = settings.focusMantra || '';
 }
+
+pledgeInput.addEventListener('input', updatePledgeCount);
+
+btnSavePledge.addEventListener('click', async () => {
+  const text = pledgeInput.value.trim();
+  if (text) {
+    await saveSettings({ customPledgeText: text });
+    showSavedIndicator('Pledge Saved');
+  }
+});
+
+btnResetPledge.addEventListener('click', async () => {
+  pledgeInput.value = DEFAULT_PLEDGE_TEXT;
+  updatePledgeCount();
+  await saveSettings({ customPledgeText: DEFAULT_PLEDGE_TEXT });
+  showSavedIndicator('Reset to Default (203w)');
+});
 
 btnSaveMantra.addEventListener('click', async () => {
   const text = mantraInput.value.trim();
@@ -199,16 +217,16 @@ btnSaveMantra.addEventListener('click', async () => {
 // Load Stats
 async function loadStats(): Promise<void> {
   const stats = await getStats();
-  statTime.textContent = formatDuration(stats.totalDistractionSeconds || 0);
-  statNudges.textContent = String(stats.interventionsTriggered || 0);
+  statRedirects.textContent = String(stats.redirectsToFocus || 0);
   statRoadblocks.textContent = String(stats.roadblocksTriggered || 0);
   statClosed.textContent = String(stats.tabsClosed || 0);
+  statTime.textContent = formatDuration(stats.totalDistractionSeconds || 0);
 
   const breakdown = stats.domainBreakdown || {};
   const entries = Object.entries(breakdown).sort((a, b) => b[1] - a[1]);
 
   if (entries.length === 0) {
-    breakdownList.innerHTML = '<p class="empty-state">No distraction activity recorded today. Great job staying focused!</p>';
+    breakdownList.innerHTML = '<p class="empty-state">Zero distractions accessed today. Pure deep work!</p>';
   } else {
     breakdownList.innerHTML = '';
     entries.forEach(([domain, secs]) => {
@@ -216,7 +234,7 @@ async function loadStats(): Promise<void> {
       row.className = 'breakdown-row';
       row.innerHTML = `
         <span style="font-weight: 500; color: #FFFFFF;">${domain}</span>
-        <span style="color: #F59E0B; font-weight: 600;">${formatDuration(secs)}</span>
+        <span style="color: #EF4444; font-weight: 700;">${formatDuration(secs)}</span>
       `;
       breakdownList.appendChild(row);
     });
@@ -226,27 +244,45 @@ async function loadStats(): Promise<void> {
 // Load & Save Settings
 async function loadSettings(): Promise<void> {
   const settings = await getSettings();
-  selectGracePeriod.value = String(settings.gracePeriodSeconds);
-  selectFrictionType.value = settings.frictionType;
+  inputFocusSite.value = settings.focusSiteUrl || 'https://github.com';
+  selectMaxPass.value = String(settings.maxPassSeconds || 15);
+  toggleBlockShorts.checked = settings.blockShorts !== false;
+  toggleAntiOcr.checked = settings.antiOcrEnabled !== false;
 }
 
-selectGracePeriod.addEventListener('change', async () => {
-  const seconds = parseInt(selectGracePeriod.value, 10);
-  await saveSettings({ gracePeriodSeconds: seconds });
-  showSavedIndicator('Grace Period Updated');
+btnSaveFocusSite.addEventListener('click', async () => {
+  let url = inputFocusSite.value.trim();
+  if (url && !url.startsWith('http://') && !url.startsWith('https://')) {
+    url = `https://${url}`;
+    inputFocusSite.value = url;
+  }
+  if (url) {
+    await saveSettings({ focusSiteUrl: url });
+    showSavedIndicator('Focus Site Updated');
+  }
 });
 
-selectFrictionType.addEventListener('change', async () => {
-  const friction = selectFrictionType.value as 'breathing' | 'pledge';
-  await saveSettings({ frictionType: friction });
-  showSavedIndicator('Friction Gate Updated');
+selectMaxPass.addEventListener('change', async () => {
+  const seconds = parseInt(selectMaxPass.value, 10);
+  await saveSettings({ maxPassSeconds: seconds });
+  showSavedIndicator('Pass Limit Updated');
+});
+
+toggleBlockShorts.addEventListener('change', async () => {
+  await saveSettings({ blockShorts: toggleBlockShorts.checked });
+  showSavedIndicator();
+});
+
+toggleAntiOcr.addEventListener('change', async () => {
+  await saveSettings({ antiOcrEnabled: toggleAntiOcr.checked });
+  showSavedIndicator();
 });
 
 // Initialization
 async function init(): Promise<void> {
   await loadCurrentTab();
   await renderRules();
-  await loadMantra();
+  await loadPledgeAndMantra();
   await loadStats();
   await loadSettings();
 }

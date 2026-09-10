@@ -1,5 +1,7 @@
 import { DistractionRule, UserSettings } from '../storage/types';
 
+export const DEFAULT_PLEDGE_TEXT = `I, of sound mind and clear conscience, solemnly acknowledge that by opening this website right now, I am actively sabotaging my own future, procrastinating on my true priorities, and voluntarily surrendering my highest intellectual potential. I openly admit that every single minute I spend consuming mindless digital entertainment is a direct theft from my studies, my career, my personal growth, and the trust of those who believe in my abilities. I recognize that genuine self-discipline is the non-negotiable price of excellence, whereas cheap comfort is the deceptive currency of mediocrity, anxiety, and lifelong regret. There are absolutely no valid excuses, no emergency exceptions, and no rationalizations for succumbing to impulsive distractions when my meaningful work remains unfinished. I understand that temporary dopamine hijacks my cognitive clarity, erodes my deep attention span, and severely delays the realization of my grandest ambitions. Knowing this truth with complete and unflinching self-awareness, if I choose to bypass this guard, I take full, personal accountability for deliberately squandering my most finite, irreplaceable asset: my focused time. I pledge that I will either close this tab right now to pursue deep work, or confront the harsh reality that I chose instant gratification over my long-term dreams and professional success.`;
+
 export const DEFAULT_PRESET_RULES: DistractionRule[] = [
   {
     id: 'youtube',
@@ -85,8 +87,11 @@ export const DEFAULT_PRESET_RULES: DistractionRule[] = [
 
 export const DEFAULT_SETTINGS: UserSettings = {
   focusMantra: 'Protect your focus. Dedicate your energy to your goals and study.',
-  gracePeriodSeconds: 120, // 2 minutes before roadblock
-  frictionType: 'breathing', // 10s breathing pause or pledge
+  focusSiteUrl: 'https://github.com',
+  maxPassSeconds: 15, // strictly max 15 seconds extension
+  blockShorts: true, // eliminate YouTube Shorts
+  customPledgeText: DEFAULT_PLEDGE_TEXT,
+  antiOcrEnabled: true,
   theme: 'auto',
   notificationsEnabled: true,
 };
