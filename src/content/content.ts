@@ -2,6 +2,7 @@ import styles from './styles.css?inline';
 import { AwarePassHud } from './banner';
 import { AwareRoadblock } from './roadblock';
 import { ShortsFilter } from '../utils/shorts';
+import { EventShield } from './event-trap';
 import { PageStatusResponse, ContentToBgMessage } from '../storage/types';
 
 let hostElement: HTMLElement | null = null;
@@ -9,6 +10,7 @@ let shadowRoot: ShadowRoot | null = null;
 let activeRoadblock: AwareRoadblock | null = null;
 let activeHud: AwarePassHud | null = null;
 const shortsFilter = new ShortsFilter();
+const eventShield = new EventShield();
 
 let currentStatus: PageStatusResponse | null = null;
 
@@ -21,10 +23,12 @@ async function sendMsg<T = any>(msg: ContentToBgMessage): Promise<T> {
 }
 
 function handleRedirectToFocus(): void {
+  eventShield.deactivate();
   sendMsg({ type: 'REDIRECT_TO_FOCUS' });
 }
 
 function handleCloseTab(): void {
+  eventShield.deactivate();
   sendMsg({ type: 'CLOSE_TAB' });
 }
 
@@ -37,6 +41,7 @@ function handleGrantPass(seconds: number): void {
 }
 
 function cleanupRoadblock(): void {
+  eventShield.deactivate();
   if (activeRoadblock) {
     activeRoadblock.destroy();
     activeRoadblock = null;
@@ -92,6 +97,14 @@ function showHardcoreRoadblock(): void {
   });
 
   root.appendChild(activeRoadblock.getElement());
+  eventShield.activate(handleRedirectToFocus);
+
+  // Auto-focus the typing input inside the shadow root
+  requestAnimationFrame(() => {
+    const textarea = activeRoadblock?.getElement().querySelector('textarea');
+    textarea?.focus();
+  });
+
   sendMsg({ type: 'EVENT_LOG', event: 'roadblock_shown', domain: currentStatus.rule?.domain || window.location.hostname });
 }
 

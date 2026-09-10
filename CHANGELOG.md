@@ -5,6 +5,16 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.1.1] - 2026-09-11 02:13 IST
+
+### Added
+* `EventShield` capture-phase interceptor stopping all host website keyboard shortcuts (e.g., YouTube `Space`, `K`, `J`, `L`, `F`, `M`), mouse clicks, and context menus while guard is active.
+* Automatic background media silencer pausing all `<video>` and `<audio>` elements on the host page during guard display.
+* Scroll lockdown preventing background page scrolling and mouse wheel bleed-through.
+
+### Changed
+* Updated default commitment pledge to the exact user version (203 words) emphasizing career risk, wasted potential, and disciplined focus.
+
 ## [1.1.0] - 2026-09-11 02:06 IST
 
 ### Added
