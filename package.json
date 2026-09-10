@@ -1,0 +1,22 @@
+{
+  "name": "aware-focus-extension",
+  "version": "1.0.0",
+  "description": "Mindful focus reminders and intentional friction to curb distracting websites while studying and working.",
+  "type": "module",
+  "scripts": {
+    "dev": "tsx scripts/build.ts --watch",
+    "build": "tsx scripts/build.ts",
+    "typecheck": "tsc --noEmit",
+    "test": "tsx tests/matcher.test.ts"
+  },
+  "keywords": ["focus", "chrome-extension", "productivity", "study", "mindfulness"],
+  "author": "",
+  "license": "MIT",
+  "devDependencies": {
+    "@types/chrome": "^0.0.280",
+    "@types/node": "^22.10.2",
+    "tsx": "^4.19.2",
+    "typescript": "^5.7.2",
+    "vite": "^6.0.3"
+  }
+}
