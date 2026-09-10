@@ -24,9 +24,9 @@
 
 * **Zero-Network Loading Interception**: Intercepts navigation via `chrome.webNavigation.onBeforeNavigate` *before* the network request is initiated. Not a single byte of video, image, feed, or HTML is ever downloaded from the distracting site.
 * **Dedicated Local Extension Guard Page (`guard/index.html`)**: The guard runs inside the local extension sandbox. Host website scripts (like YouTube's shortcuts or background audio) physically cannot execute.
-* **Canvas Anti-OCR & Anti-Copy Protection**: The 203-word commitment pledge is rendered onto an HTML5 `<canvas>` with an anti-OCR geometric mesh. DOM text selection, clipboard copying, drag-and-drop, and context menus are completely blocked.
-* **Brutal 203-Word Exact Typing Gate**: Requires character-by-character manual typing with zero typos, tracking live word count (`X / 203 words`) before unlock is enabled.
-* **Productive Focus Site Redirection**: Pressing <kbd>Esc</kbd> or clicking *"Return to Focus Site"* instantly redirects the tab to your designated study/work site (e.g., `https://github.com` or `https://leetcode.com`).
+* **Canvas Anti-OCR & Anti-Copy Protection**: The 202-word commitment pledge is rendered onto an HTML5 `<canvas>` with an anti-OCR geometric mesh and high-friction **Chaos Mixed Casing** (`YeS, I aM fuLlY AwaRe...`). DOM text selection, clipboard copying, drag-and-drop, and context menus are completely blocked.
+* **Inactivity Watchdog & Mindful Breathing Session**: If typing halts for **20 seconds**, the screen automatically transitions into an atmospheric **Mindful Breathing Card** (`Inhale 4s -> Hold 3s -> Exhale 4s`).
+* **15-Second Breathing Auto-Redirect**: After **15 seconds** of guided breathing, the extension automatically redirects the tab to your designated study/work site (e.g., `https://github.com` or `https://leetcode.com`).
 * **Strict 15-Second Temporary Pass**: 100% pledge completion unlocks the site for **strictly at most 15 seconds** with a high-urgency countdown HUD before the guard re-intercepts and pulls the tab back to the guard page.
 * **Integrated YouTube Shorts Purger**: Automatically strips Shorts carousels, shelves, and navigation links from YouTube and redirects Shorts URLs.
 

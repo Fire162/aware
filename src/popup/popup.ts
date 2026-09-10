@@ -7,7 +7,7 @@ import {
   saveSettings,
   getStats,
 } from '../storage/store';
-import { DEFAULT_PLEDGE_TEXT } from '../utils/presets';
+import { DEFAULT_PLEDGE_TEXT, toChaosCase } from '../utils/presets';
 import { extractHostname } from '../utils/matcher';
 import { DistractionRule } from '../storage/types';
 
@@ -27,6 +27,7 @@ const pledgeInput = document.getElementById('pledge-input') as HTMLTextAreaEleme
 const pledgeWordCount = document.getElementById('pledge-word-count') as HTMLElement;
 const btnSavePledge = document.getElementById('btn-save-pledge') as HTMLButtonElement;
 const btnResetPledge = document.getElementById('btn-reset-pledge') as HTMLButtonElement;
+const btnChaosPledge = document.getElementById('btn-chaos-pledge') as HTMLButtonElement;
 const mantraInput = document.getElementById('mantra-input') as HTMLInputElement;
 const btnSaveMantra = document.getElementById('btn-save-mantra') as HTMLButtonElement;
 
@@ -199,11 +200,20 @@ btnSavePledge.addEventListener('click', async () => {
   }
 });
 
+btnChaosPledge.addEventListener('click', () => {
+  const current = pledgeInput.value.trim();
+  if (current) {
+    pledgeInput.value = toChaosCase(current);
+    updatePledgeCount();
+    showSavedIndicator('Chaos casing applied');
+  }
+});
+
 btnResetPledge.addEventListener('click', async () => {
   pledgeInput.value = DEFAULT_PLEDGE_TEXT;
   updatePledgeCount();
   await saveSettings({ customPledgeText: DEFAULT_PLEDGE_TEXT });
-  showSavedIndicator('Reset to Default (203w)');
+  showSavedIndicator('Reset to Default (202w)');
 });
 
 btnSaveMantra.addEventListener('click', async () => {

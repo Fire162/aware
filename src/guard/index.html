@@ -8,23 +8,29 @@
 </head>
 <body>
   <div class="guard-screen">
-    <div class="guard-modal">
+    <!-- View 1: Hardcore Typing Arena -->
+    <div id="typing-modal" class="guard-modal">
       <!-- Top Action Bar -->
       <div class="guard-header-bar">
         <div class="guard-shield-tag">
           <span class="pulse-dot"></span>
           AWARE ZERO-DATA GUARD
         </div>
-        <button id="btn-focus-redirect" class="btn btn-focus" title="Exit to productive work (Esc)">
-          ⚡ Return to Focus Site [Esc]
-        </button>
+        <div class="header-right-actions">
+          <button id="btn-manual-breathe" class="btn btn-sm btn-subtle" title="Take a mindful breathing break">
+            🧘 Mindful Pause
+          </button>
+          <button id="btn-focus-redirect" class="btn btn-focus" title="Exit to productive work (Esc)">
+            ⚡ Return to Focus Site [Esc]
+          </button>
+        </div>
       </div>
 
       <!-- Main Title -->
       <div class="title-box">
         <h1 class="guard-title" id="blocked-domain-title">Access Blocked</h1>
         <p class="guard-subtitle">
-          This site is guarded. Zero network data was loaded. To proceed, you must manually type the exact <strong id="word-count-label">203-word</strong> commitment pledge below.
+          This site is guarded. Zero network data was loaded. To proceed, you must manually type the exact <strong id="word-count-label">202-word</strong> Chaos-Cased commitment pledge below.
         </p>
       </div>
 
@@ -36,7 +42,7 @@
       <!-- Anti-OCR Canvas Viewport -->
       <div class="pledge-viewport">
         <div class="pledge-meta">
-          <span class="meta-label">🔒 Anti-Copy Commitment Pledge</span>
+          <span class="meta-label">🔒 Anti-Copy Commitment Pledge (Chaos Mixed Casing)</span>
           <span class="meta-tag">Pasting & OCR Disabled</span>
         </div>
         <canvas id="pledge-canvas"></canvas>
@@ -45,7 +51,8 @@
       <!-- Typing Arena -->
       <div class="typing-arena">
         <div class="typing-header">
-          <span id="progress-text" class="progress-text">Progress: <strong>0</strong> / 203 words (0%)</span>
+          <span id="progress-text" class="progress-text">Progress: <strong>0</strong> / 202 words (0%)</span>
+          <span id="idle-indicator" class="idle-indicator">Active</span>
           <span id="status-pill" class="status-pill status-idle">Awaiting typing...</span>
         </div>
 
@@ -76,6 +83,41 @@
         </button>
         <button id="btn-unlock" class="btn btn-unlock" disabled>
           🔒 Type full pledge to unlock (Max 15s)
+        </button>
+      </div>
+    </div>
+
+    <!-- View 2: Full Mindful Breathing Session Card (Active on 20s inactivity or button click) -->
+    <div id="breathing-card" class="breathing-card" style="display: none;">
+      <div class="breathing-header">
+        <span class="breathing-badge">MINDFUL RESET</span>
+        <h2 class="breathing-title">Breathe With Awareness</h2>
+        <p class="breathing-subtitle">Notice the urge to procrastinate. Inhale clarity, exhale distraction.</p>
+      </div>
+
+      <!-- Animated Breathing Visualizer -->
+      <div class="breathing-orb-container">
+        <div id="breathing-aura" class="breathing-aura"></div>
+        <div id="breathing-circle" class="breathing-circle">
+          <span id="breathing-phase-text" class="breathing-phase-text">Inhale</span>
+          <span id="breathing-phase-sub" class="breathing-phase-sub">4s</span>
+        </div>
+      </div>
+
+      <!-- Countdown to Focus Site Redirect -->
+      <div class="breathing-redirect-box">
+        <span class="redirect-icon">⏳</span>
+        <span id="breathing-countdown-text" class="redirect-text">
+          Redirecting to Focus Site in <strong>15s</strong>...
+        </span>
+      </div>
+
+      <div class="breathing-actions">
+        <button id="btn-resume-typing" class="btn btn-secondary">
+          ✍️ Resume Typing
+        </button>
+        <button id="btn-breathing-focus" class="btn btn-focus">
+          ⚡ Go to Focus Site Now (Esc)
         </button>
       </div>
     </div>

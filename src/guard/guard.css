@@ -1,14 +1,15 @@
 :root {
-  --bg-main: #060911;
-  --bg-card: #0D1322;
-  --bg-input: #080C16;
-  --border: rgba(255, 255, 255, 0.1);
+  --bg-main: #050811;
+  --bg-card: #0B101E;
+  --bg-input: #070B14;
+  --border: rgba(255, 255, 255, 0.09);
   --border-focus: #3B82F6;
   --primary: #3B82F6;
   --primary-hover: #2563EB;
   --danger: #EF4444;
   --success: #10B981;
-  --text-main: #F3F4F6;
+  --accent-cyan: #06B6D4;
+  --text-main: #F8FAFC;
   --text-muted: #94A3B8;
 }
 
@@ -23,9 +24,9 @@ body {
   padding: 0;
   width: 100vw;
   min-height: 100vh;
-  background-color: var(--bg-main);
+  background: radial-gradient(circle at 50% 20%, #0F172A 0%, var(--bg-main) 70%);
   color: var(--text-main);
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   font-size: 14px;
   line-height: 1.5;
   display: flex;
@@ -47,11 +48,12 @@ body {
 
 .guard-modal {
   width: 100%;
-  background: var(--bg-card);
+  background: rgba(11, 16, 30, 0.95);
+  backdrop-filter: blur(20px);
   border: 1px solid var(--border);
-  border-radius: 18px;
+  border-radius: 20px;
   padding: 28px 32px;
-  box-shadow: 0 25px 70px -15px rgba(0, 0, 0, 0.95);
+  box-shadow: 0 30px 80px -20px rgba(0, 0, 0, 0.95);
   display: flex;
   flex-direction: column;
   gap: 16px;
@@ -66,6 +68,12 @@ body {
   gap: 12px;
   border-bottom: 1px solid rgba(255, 255, 255, 0.08);
   padding-bottom: 14px;
+}
+
+.header-right-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
 }
 
 .guard-shield-tag {
@@ -107,7 +115,7 @@ body {
   line-height: 1.45;
 }
 
-/* Mantra */
+/* Mantra Box */
 .mantra-box {
   background: rgba(59, 130, 246, 0.08);
   border-left: 3px solid var(--primary);
@@ -120,7 +128,7 @@ body {
 
 /* Canvas Viewport */
 .pledge-viewport {
-  background: #0B101E;
+  background: #070B14;
   border: 1px solid rgba(255, 255, 255, 0.1);
   border-radius: 10px;
   overflow: hidden;
@@ -177,6 +185,14 @@ body {
 
 .progress-text {
   color: #CBD5E1;
+}
+
+.idle-indicator {
+  font-size: 10px;
+  color: var(--text-muted);
+  background: rgba(255, 255, 255, 0.05);
+  padding: 2px 6px;
+  border-radius: 4px;
 }
 
 .status-pill {
@@ -285,6 +301,18 @@ body {
   transform: translateY(-1px);
 }
 
+.btn-subtle {
+  background: rgba(255, 255, 255, 0.06);
+  color: #94A3B8;
+  font-size: 12px;
+  padding: 7px 11px;
+}
+
+.btn-subtle:hover {
+  background: rgba(255, 255, 255, 0.12);
+  color: #FFFFFF;
+}
+
 .bottom-actions {
   display: flex;
   align-items: center;
@@ -326,8 +354,166 @@ body {
   transform: translateY(-1px);
 }
 
+/* ========================================================= */
+/* Mindful Breathing Card View */
+/* ========================================================= */
+.breathing-card {
+  width: 100%;
+  max-width: 620px;
+  background: rgba(11, 16, 30, 0.98);
+  border: 1px solid rgba(59, 130, 246, 0.25);
+  border-radius: 24px;
+  padding: 36px 32px;
+  box-shadow: 0 30px 90px rgba(0, 0, 0, 0.95), 0 0 40px rgba(59, 130, 246, 0.15);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 24px;
+  animation: breathingCardFade 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.breathing-header {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+
+.breathing-badge {
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  color: var(--accent-cyan);
+  background: rgba(6, 182, 212, 0.12);
+  border: 1px solid rgba(6, 182, 212, 0.3);
+  padding: 3px 10px;
+  border-radius: 9999px;
+  text-transform: uppercase;
+}
+
+.breathing-title {
+  font-size: 24px;
+  font-weight: 800;
+  color: #FFFFFF;
+  letter-spacing: -0.02em;
+}
+
+.breathing-subtitle {
+  font-size: 13.5px;
+  color: var(--text-muted);
+  max-width: 440px;
+}
+
+/* Animated Breathing Orb */
+.breathing-orb-container {
+  position: relative;
+  width: 180px;
+  height: 180px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 12px 0;
+}
+
+.breathing-aura {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(6, 182, 212, 0.3) 0%, rgba(59, 130, 246, 0.05) 70%, transparent 100%);
+  filter: blur(12px);
+  transform: scale(0.9);
+  transition: transform 4s cubic-bezier(0.4, 0, 0.2, 1), opacity 4s ease;
+}
+
+.breathing-circle {
+  position: relative;
+  width: 130px;
+  height: 130px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 35%, #38BDF8 0%, #0284C7 60%, #0369A1 100%);
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  box-shadow: 0 10px 30px rgba(2, 132, 199, 0.5);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  transform: scale(0.85);
+  transition: transform 4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.breathing-circle.inhale {
+  transform: scale(1.3);
+}
+
+.breathing-aura.inhale {
+  transform: scale(1.45);
+  opacity: 0.9;
+}
+
+.breathing-circle.hold {
+  transform: scale(1.3);
+}
+
+.breathing-circle.exhale {
+  transform: scale(0.85);
+}
+
+.breathing-aura.exhale {
+  transform: scale(0.85);
+  opacity: 0.3;
+}
+
+.breathing-phase-text {
+  font-size: 16px;
+  font-weight: 800;
+  color: #FFFFFF;
+  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
+}
+
+.breathing-phase-sub {
+  font-size: 11px;
+  font-weight: 700;
+  color: rgba(255, 255, 255, 0.8);
+}
+
+/* Redirect Box */
+.breathing-redirect-box {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 9999px;
+  padding: 8px 16px;
+  font-size: 13px;
+  color: #E2E8F0;
+}
+
+.breathing-redirect-box strong {
+  color: #FBBF24;
+}
+
+.breathing-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+}
+
+.breathing-actions .btn {
+  flex: 1;
+  padding: 12px 16px;
+  font-size: 13px;
+}
+
 @keyframes fadeIn {
   from { opacity: 0; transform: scale(0.98); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+@keyframes breathingCardFade {
+  from { opacity: 0; transform: scale(0.94); }
   to { opacity: 1; transform: scale(1); }
 }
 

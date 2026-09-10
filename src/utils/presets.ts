@@ -1,6 +1,24 @@
 import { DistractionRule, UserSettings } from '../storage/types';
 
-export const DEFAULT_PLEDGE_TEXT = `Yes, I am fully aware that by doing this, I am actively wasting my potential and willing to risk my career, my education, and my long-term future for cheap digital dopamine! I consciously admit that every single minute I spend procrastinating on this website is a deliberate, reckless choice to betray my own ambitions. I acknowledge that success demands relentless discipline, intense concentration, and emotional maturity, whereas mindless scrolling is the hallmark of weakness, mediocrity, and regret. There are absolutely no valid excuses, no justifiable exceptions, and no rationalizations whatsoever: I am choosing temporary entertainment over my highest goals! By continuing past this screen, I openly accept the bitter reality of missed opportunities, broken promises, and self-inflicted failure. If I truly respected my time, my intellect, and my family, I would immediately close this tab and return to deep, focused work without hesitation. Knowing all of this with absolute, unflinching clarity, I confess that I am trading my greatness for fleeting distractions. I take 100% personal responsibility for the devastating consequences of squandering my most finite, irreplaceable asset: my focused attention! Now, I must either close this tab right now, or confront the painful truth of what I have willingly and foolishly sacrificed.`;
+export function toChaosCase(str: string): string {
+  let result = '';
+  // Patterned irregular casing mixing single, double, and alternating caps
+  const pattern = [1, 0, 1, 1, 0, 1, 0, 0, 1, 0, 1, 1, 0, 0, 1, 0];
+  let pIdx = 0;
+  for (let i = 0; i < str.length; i++) {
+    const ch = str[i];
+    if (/[a-zA-Z]/.test(ch)) {
+      const upper = pattern[pIdx % pattern.length] === 1;
+      result += upper ? ch.toUpperCase() : ch.toLowerCase();
+      pIdx++;
+    } else {
+      result += ch;
+    }
+  }
+  return result;
+}
+
+export const DEFAULT_PLEDGE_TEXT = `YeS, I aM fuLlY AwaRe ThAT bY doInG ThiS, i Am ACtIveLy WAstInG mY PoTenTiAL anD wIlLInG to RiSK my CaReER, mY edUcATioN, aNd MY lOng-TeRM fuTuRe FOr CheAp DIgiTaL dOPaMinE! i COnsCiOuSLy AdmIt THat EvErY SiNglE mINutE i SpENd ProCrAStiNaTiNG oN thIs WEbsItE iS A dEliBeRAte, ReCkLEsS chOiCE to BeTrAY mY owN aMBitIoNs. I AcKnoWlEDge ThAt SUcCesS dEManDs ReLEnTleSs DIscIpLiNE, iNteNsE ConCeNtRAtIon, AnD EmoTiOnAL mAtuRiTY, whErEaS MiNdlEsS ScrOlLiNG iS thE hALlmArK oF WeAknEsS, MedIoCrITy, And ReGRet. ThErE ArE no VaLId eXcUsES, nO juStIFiaBlE eXCePtiOnS, And No RaTIoNalIzATioNs WhATsOevEr: I Am cHoOsINg TemPoRAry EnTeRTaInmEnT OveR mY hIGhEst GoALs! bY cOnTInUinG pASt tHiS sCReEn, i OpENly AcCePT tHe bItTEr rEaLiTY oF miSsED opPoRtUNiTieS, bROkeN pRoMIsEs, aNd SElf-InFlICtEd fAiLUre. If I tRUlY reSpECteD mY tIMe, My iNtELleCt, AnD My FamIlY, I woUlD iMMeDiaTeLY clOsE tHIs Tab AnD RetUrN tO DeEp, fOcUSed WoRk WItHouT hESitAtIoN. KnOwiNg ALl oF tHiS WiTh aBsOLutE, uNfLInChiNg CLarItY, i COnFesS tHAt i Am TrADiNg mY gREatNeSs FOr FleEtINg dIsTrACtIonS. i TAke 100% PeRsONaL reSpONsiBiLiTY fOr tHe DEvaStAtINg ConSeQUenCeS oF SqUanDeRIng My MoST fIniTe, IRrePlAcEAbLe aSsET: my FoCuSEd AttEnTIon! NoW, i MUsT eiThER clOsE tHIs Tab RiGHt nOw, Or COnFroNt THe pAiNfUL tRutH oF WhaT i HaVE wIllInGLy aNd FoOLiShlY sACriFiCeD.`;
 
 export const DEFAULT_PRESET_RULES: DistractionRule[] = [
   {

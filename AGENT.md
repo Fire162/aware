@@ -14,10 +14,11 @@
 
 1. **Zero-Network Loading (`webNavigation.onBeforeNavigate`)**: Intercepts requests before the browser connects to the distracting site. Not a single byte of video, HTML, or media is downloaded.
 2. **Dedicated Local Extension Guard Page (`guard/index.html`)**: The guard runs within the extension's local sandbox, guaranteeing 100% immunity from host website shortcuts, background audio, and tracking scripts.
-3. **Canvas Anti-OCR & Anti-Copy Barrier**: The 203-word commitment pledge is rendered onto an HTML5 `<canvas>` with an anti-OCR background mesh. Clipboard paste, drag-and-drop, context menus, and selection are blocked.
-4. **Productive Focus Site Redirection**: Pressing <kbd>Esc</kbd> or clicking "Return to Focus Site" redirects the user to their configured productive workspace (e.g. `https://github.com` or `https://leetcode.com`).
-5. **Strict 15-Second Temporary Pass**: Typing the exact 203 words with 100% accuracy unlocks access for **strictly at most 15 seconds**, monitored by a live countdown HUD that pulls the tab back to the guard page upon expiry.
-6. **Integrated YouTube Shorts Purger**: Strips YouTube Shorts shelves, reels, and sidebar entry points without external traces.
+3. **Canvas Anti-OCR & Chaos Mixed Casing Barrier**: The 202-word commitment pledge is rendered onto an HTML5 `<canvas>` with an anti-OCR background mesh and randomized mixed casing (`YeS, I aM fuLlY AwaRe...`). Clipboard paste, drag-and-drop, context menus, and selection are blocked.
+4. **Inactivity Watchdog & Guided Mindful Breathing**: If no keystrokes are registered for 20 seconds during the typing challenge, the UI activates a full-screen Mindful Breathing session (`Inhale 4s -> Hold 3s -> Exhale 4s`). After 15 seconds of breathing, it automatically redirects the tab to the user's Focus Site.
+5. **Productive Focus Site Redirection**: Pressing <kbd>Esc</kbd>, clicking "Return to Focus Site", or completing the 15s breathing timeout redirects the tab to the configured productive workspace (e.g. `https://github.com` or `https://leetcode.com`).
+6. **Strict 15-Second Temporary Pass**: Typing the exact 202 words with 100% accuracy unlocks access for **strictly at most 15 seconds**, monitored by a live countdown HUD that pulls the tab back to the guard page upon expiry.
+7. **Integrated YouTube Shorts Purger**: Strips YouTube Shorts shelves, reels, and sidebar entry points without external traces.
 
 ---
 

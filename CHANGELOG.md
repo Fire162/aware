@@ -5,6 +5,16 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.3.0] - 2026-09-11 02:29 IST
+
+### Added
+* Chaos Mixed Casing in 202-word commitment pledge: irregular uppercase/lowercase letters forcing deliberate <kbd>Shift</kbd> keying to eliminate auto-pilot muscle memory.
+* "🔀 Chaos Case" button in popup settings to convert custom pledges into alternating mixed case.
+* Guided Mindful Breathing session with animated expanding/contracting breathing orb (Inhale 4s $\rightarrow$ Hold 3s $\rightarrow$ Exhale 4s).
+* 20-second inactivity watchdog on local guard page: automatically opens fullscreen Mindful Breathing Card if no typing occurs for 20 seconds.
+* 15-second automatic Focus Site redirect: automatically redirects user to designated Focus Site after 15 seconds of breathing, with manual "Resume Typing" override.
+* Polished guard screen aesthetic with ambient gradient illumination and illuminated status badges.
+
 ## [1.2.0] - 2026-09-11 02:18 IST
 
 ### Added
