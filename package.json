@@ -1,6 +1,6 @@
 {
   "name": "aware-focus-extension",
-  "version": "1.1.1",
+  "version": "1.1.2",
   "description": "Mindful focus reminders and intentional friction to curb distracting websites while studying and working.",
   "type": "module",
   "scripts": {

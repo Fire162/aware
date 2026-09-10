@@ -5,6 +5,11 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.1.2] - 2026-09-11 02:16 IST
+
+### Added
+* Documented mandatory version synchronization guideline in `AGENT.md` requiring synchronized Semantic Versioning across `package.json`, `manifest.json`, and `CHANGELOG.md` for every change.
+
 ## [1.1.1] - 2026-09-11 02:13 IST
 
 ### Added

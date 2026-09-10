@@ -105,6 +105,11 @@ Host websites (such as YouTube, Twitter, or Reddit) apply heavy CSS resets, CSS 
 
 ## 6. Coding Guidelines for Future Agents
 
+- **Mandatory Version Synchronization**: Every code change, feature, bug fix, or refactor MUST strictly increment the project version following Semantic Versioning across all three files synchronously:
+  1. `package.json` (`"version": "X.Y.Z"`)
+  2. `manifest.json` (`"version": "X.Y.Z"`)
+  3. `CHANGELOG.md` (add entry under `## [X.Y.Z] - YYYY-MM-DD HH:mm IST`)
+  4. Always run `pnpm run build` so `dist/manifest.json` reflects the updated version before committing.
 - **Encapsulation**: Never inject unencapsulated HTML or global styles into the host page's DOM. Always utilize the existing Shadow DOM wrapper.
 - **Privacy & Sanitization**: Never commit host server IPs or private credentials. Use `192.0.2.1` or `<your-vps-ip>` placeholders for documentation examples.
 - **Storage Safety**: Always access extension settings and rules via `src/storage/store.ts` to maintain schema consistency and reactive badge state.
