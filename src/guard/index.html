@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Aware • Access Blocked</title>
+  <link rel="stylesheet" href="./guard.css" />
+</head>
+<body>
+  <div class="guard-screen">
+    <div class="guard-modal">
+      <!-- Top Action Bar -->
+      <div class="guard-header-bar">
+        <div class="guard-shield-tag">
+          <span class="pulse-dot"></span>
+          AWARE ZERO-DATA GUARD
+        </div>
+        <button id="btn-focus-redirect" class="btn btn-focus" title="Exit to productive work (Esc)">
+          ⚡ Return to Focus Site [Esc]
+        </button>
+      </div>
+
+      <!-- Main Title -->
+      <div class="title-box">
+        <h1 class="guard-title" id="blocked-domain-title">Access Blocked</h1>
+        <p class="guard-subtitle">
+          This site is guarded. Zero network data was loaded. To proceed, you must manually type the exact <strong id="word-count-label">203-word</strong> commitment pledge below.
+        </p>
+      </div>
+
+      <!-- Focus Mantra -->
+      <div class="mantra-box" id="mantra-text">
+        "Protect your focus. Dedicate your energy to your goals and study."
+      </div>
+
+      <!-- Anti-OCR Canvas Viewport -->
+      <div class="pledge-viewport">
+        <div class="pledge-meta">
+          <span class="meta-label">🔒 Anti-Copy Commitment Pledge</span>
+          <span class="meta-tag">Pasting & OCR Disabled</span>
+        </div>
+        <canvas id="pledge-canvas"></canvas>
+      </div>
+
+      <!-- Typing Arena -->
+      <div class="typing-arena">
+        <div class="typing-header">
+          <span id="progress-text" class="progress-text">Progress: <strong>0</strong> / 203 words (0%)</span>
+          <span id="status-pill" class="status-pill status-idle">Awaiting typing...</span>
+        </div>
+
+        <div class="progress-track">
+          <div id="progress-fill" class="progress-fill"></div>
+        </div>
+
+        <textarea
+          id="typing-input"
+          class="typing-input"
+          rows="5"
+          placeholder="Begin typing the exact pledge here (exact capitalization and punctuation required)..."
+          autocomplete="off"
+          autocorrect="off"
+          autocapitalize="off"
+          spellcheck="false"
+        ></textarea>
+
+        <div id="warning-toast" class="warning-toast" style="display: none;">
+          ⚠️ Pasting is strictly blocked! You must type each character manually.
+        </div>
+      </div>
+
+      <!-- Bottom Actions -->
+      <div class="bottom-actions">
+        <button id="btn-close-tab" class="btn btn-secondary">
+          Close Tab
+        </button>
+        <button id="btn-unlock" class="btn btn-unlock" disabled>
+          🔒 Type full pledge to unlock (Max 15s)
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <script type="module" src="./guard.ts"></script>
+</body>
+</html>

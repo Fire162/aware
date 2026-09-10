@@ -10,13 +10,14 @@
 
 ## 1. Project Overview
 
-**Aware** is a minimalist, intentional Manifest V3 Chromium browser extension designed to curb mindless digital distractions and protect focus during work and study sessions. It operates continuously (24/7) in the background without requiring manual session starts, applying a **two-tiered intervention model**:
+**Aware** is a minimalist, intentional Manifest V3 Chromium browser extension designed to curb mindless digital distractions and protect focus during work and study sessions. It operates continuously (24/7) in the background with a **Zero-Network Loading Guard Architecture**:
 
-1. **Immediate Fullscreen Takeover (`document_start`)**: Injected before page DOM finishes rendering. Distracting websites are immediately covered by a 100% solid opaque barrier (`#080C14`, z-index 2147483647).
-2. **Canvas Anti-OCR & Anti-Copy Barrier**: The 203-word commitment pledge is rendered onto an HTML5 `<canvas>` with anti-OCR background mesh. Clipboard paste, drag-and-drop, context menus, and selection are blocked.
-3. **Productive Focus Site Redirection**: Pressing <kbd>Esc</kbd> or clicking "Return to Focus Site" redirects the user to their configured productive workspace (e.g. `https://github.com` or `https://leetcode.com`).
-4. **Strict 15-Second Temporary Pass**: Typing the exact 203 words with 100% accuracy unlocks access for **strictly at most 15 seconds**, monitored by a live countdown HUD that re-locks the screen upon expiry.
-5. **Integrated YouTube Shorts Purger**: Strips YouTube Shorts shelves, reels, and sidebar entry points without external traces.
+1. **Zero-Network Loading (`webNavigation.onBeforeNavigate`)**: Intercepts requests before the browser connects to the distracting site. Not a single byte of video, HTML, or media is downloaded.
+2. **Dedicated Local Extension Guard Page (`guard/index.html`)**: The guard runs within the extension's local sandbox, guaranteeing 100% immunity from host website shortcuts, background audio, and tracking scripts.
+3. **Canvas Anti-OCR & Anti-Copy Barrier**: The 203-word commitment pledge is rendered onto an HTML5 `<canvas>` with an anti-OCR background mesh. Clipboard paste, drag-and-drop, context menus, and selection are blocked.
+4. **Productive Focus Site Redirection**: Pressing <kbd>Esc</kbd> or clicking "Return to Focus Site" redirects the user to their configured productive workspace (e.g. `https://github.com` or `https://leetcode.com`).
+5. **Strict 15-Second Temporary Pass**: Typing the exact 203 words with 100% accuracy unlocks access for **strictly at most 15 seconds**, monitored by a live countdown HUD that pulls the tab back to the guard page upon expiry.
+6. **Integrated YouTube Shorts Purger**: Strips YouTube Shorts shelves, reels, and sidebar entry points without external traces.
 
 ---
 
@@ -24,7 +25,7 @@
 
 ```
 /root/aware/
-├── manifest.json            # Chrome MV3 manifest configuration (run_at: document_start)
+├── manifest.json            # Chrome MV3 manifest configuration (webNavigation, run_at: document_start)
 ├── package.json             # Scripts & dependencies (Vite, TypeScript, TSX)
 ├── tsconfig.json            # Strict TypeScript configuration
 ├── AGENT.md                 # Agent knowledge base & architecture guide
@@ -33,19 +34,24 @@
 ├── CONTRIBUTING.md          # Developer workflow guidelines
 ├── LICENSE                  # MIT License
 ├── scripts/
-│   ├── build.ts             # Programmatic Vite compiler (bundles popup, content IIFE, worker ES)
+│   ├── build.ts             # Programmatic Vite compiler (bundles popup, guard, content, worker)
 │   └── generate-icons.ts    # Pure Node.js PNG icon generator for public/icons
 ├── public/
 │   └── icons/               # Extension icons (icon16.png, icon48.png, icon128.png)
 ├── src/
 │   ├── vite-env.d.ts        # Ambient typing for inline CSS imports
+│   ├── guard/
+│   │   ├── index.html       # Standalone zero-data local extension guard page
+│   │   ├── guard.ts         # Canvas anti-OCR renderer, typing engine, focus redirects
+│   │   └── guard.css        # Local guard page theme styles
 │   ├── background/
-│   │   └── service-worker.ts # Tab tracking, session timer, focus redirects, strict 15s passes
+│   │   └── service-worker.ts # onBeforeNavigate zero-data redirect, pass management
 │   ├── content/
-│   │   ├── content.ts       # Content script entry (document_start), Shorts filter, HUD/guard lifecycle
+│   │   ├── content.ts       # Content script entry (Shorts purger, 15s HUD, expiration handler)
 │   │   ├── banner.ts        # 15-second temporary pass countdown HUD
 │   │   ├── roadblock.ts     # Anti-OCR Canvas hardcore roadblock with real-time typing engine
-│   │   └── styles.css       # Scoped Shadow Root styles (solid opaque barrier, zero leaks)
+│   │   ├── event-trap.ts    # EventShield capture-phase shortcut blocker
+│   │   └── styles.css       # Scoped Shadow Root styles for in-page HUD
 │   ├── popup/
 │   │   ├── index.html       # Hardcore popup layout (Rules, 203w Pledge, Analytics, Settings)
 │   │   ├── popup.ts         # Reactive popup controller & storage bindings

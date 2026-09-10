@@ -118,8 +118,9 @@ function showPassHud(totalSeconds: number, remainingSeconds: number): void {
     totalSeconds,
     initialRemainingSeconds: remainingSeconds,
     onExpire: () => {
-      // 15 seconds expired, immediately lock screen again!
-      showHardcoreRoadblock();
+      // 15 seconds expired, immediately yank back to local guard page!
+      const guardUrl = chrome.runtime.getURL('guard/index.html?target=' + encodeURIComponent(window.location.href));
+      window.location.replace(guardUrl);
     },
     onRedirectToFocus: handleRedirectToFocus,
   });
@@ -152,7 +153,9 @@ async function checkPage(): Promise<void> {
     if (status.isPassed && status.passRemainingSeconds > 0) {
       showPassHud(status.maxPassSeconds || 15, status.passRemainingSeconds);
     } else {
-      showHardcoreRoadblock();
+      // Redirect immediately to local guard page
+      const guardUrl = chrome.runtime.getURL('guard/index.html?target=' + encodeURIComponent(window.location.href));
+      window.location.replace(guardUrl);
     }
   } catch (err) {
     console.debug('[Aware] Error communicating status:', err);

@@ -13,7 +13,7 @@ async function runBuild() {
   }
 
   // 1. Build popup
-  console.log('[Aware] 1/3 Compiling popup...');
+  console.log('[Aware] 1/4 Compiling popup...');
   await build({
     root: path.resolve(rootDir, 'src/popup'),
     base: './',
@@ -27,8 +27,23 @@ async function runBuild() {
     configFile: false,
   });
 
-  // 2. Build content script as a self-contained IIFE bundle
-  console.log('[Aware] 2/3 Compiling content script (IIFE)...');
+  // 2. Build local standalone guard page
+  console.log('[Aware] 2/4 Compiling local guard page...');
+  await build({
+    root: path.resolve(rootDir, 'src/guard'),
+    base: './',
+    build: {
+      outDir: path.resolve(distDir, 'guard'),
+      emptyOutDir: true,
+      rollupOptions: {
+        input: path.resolve(rootDir, 'src/guard/index.html'),
+      },
+    },
+    configFile: false,
+  });
+
+  // 3. Build content script as a self-contained IIFE bundle
+  console.log('[Aware] 3/4 Compiling content script (IIFE)...');
   await build({
     root: rootDir,
     build: {
@@ -44,8 +59,8 @@ async function runBuild() {
     configFile: false,
   });
 
-  // 3. Build background service worker (ES module)
-  console.log('[Aware] 3/3 Compiling background service worker (ES)...');
+  // 4. Build background service worker (ES module)
+  console.log('[Aware] 4/4 Compiling background service worker (ES)...');
   await build({
     root: rootDir,
     build: {

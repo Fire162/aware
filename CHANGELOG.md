@@ -5,6 +5,14 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.2.0] - 2026-09-11 02:18 IST
+
+### Added
+* Zero-network loading architecture via `chrome.webNavigation.onBeforeNavigate`: completely blocks distracting sites from downloading any HTML, media, or data before requests start.
+* Dedicated local extension guard page (`guard/index.html`) running inside the local extension sandbox.
+* 100% isolation from third-party website scripts, keyboard shortcuts, background audio, and tracking telemetry.
+* Seamless redirection flows: Esc/Return exits to Focus Site, while 100% pledge completion unlocks strict 15s access to target URL.
+
 ## [1.1.2] - 2026-09-11 02:16 IST
 
 ### Added

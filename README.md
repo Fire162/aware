@@ -22,13 +22,13 @@
 
 ## 🌟 Key Highlights
 
-* **Immediate Fullscreen Barrier (`document_start`)**: Injected before target page DOM finishes rendering. The distracting website is 100% blocked behind an opaque guard screen with zero video or thumbnail flash.
-* **Canvas Anti-OCR & Anti-Copy Protection**: The 203-word commitment pledge is rendered onto an HTML5 `<canvas>` with anti-OCR geometric mesh. DOM text selection, clipboard copying, drag-and-drop, and context menus are completely suppressed.
-* **Brutal 203-Word Exact Typing Gate**: Requires character-by-character typing with zero typos, tracking real-time word progress (`X / 203 words`) before unlock is possible.
-* **Productive Focus Site Redirection**: Pressing <kbd>Esc</kbd> or clicking *"Return to Work"* instantly redirects the tab to your designated study/work site (e.g. `https://github.com` or `https://leetcode.com`).
-* **Strict 15-Second Session Ceiling**: Completing the pledge unlocks access for **strictly at most 15 seconds** with a high-urgency countdown HUD before the guard re-locks.
+* **Zero-Network Loading Interception**: Intercepts navigation via `chrome.webNavigation.onBeforeNavigate` *before* the network request is initiated. Not a single byte of video, image, feed, or HTML is ever downloaded from the distracting site.
+* **Dedicated Local Extension Guard Page (`guard/index.html`)**: The guard runs inside the local extension sandbox. Host website scripts (like YouTube's shortcuts or background audio) physically cannot execute.
+* **Canvas Anti-OCR & Anti-Copy Protection**: The 203-word commitment pledge is rendered onto an HTML5 `<canvas>` with an anti-OCR geometric mesh. DOM text selection, clipboard copying, drag-and-drop, and context menus are completely blocked.
+* **Brutal 203-Word Exact Typing Gate**: Requires character-by-character manual typing with zero typos, tracking live word count (`X / 203 words`) before unlock is enabled.
+* **Productive Focus Site Redirection**: Pressing <kbd>Esc</kbd> or clicking *"Return to Focus Site"* instantly redirects the tab to your designated study/work site (e.g., `https://github.com` or `https://leetcode.com`).
+* **Strict 15-Second Temporary Pass**: 100% pledge completion unlocks the site for **strictly at most 15 seconds** with a high-urgency countdown HUD before the guard re-intercepts and pulls the tab back to the guard page.
 * **Integrated YouTube Shorts Purger**: Automatically strips Shorts carousels, shelves, and navigation links from YouTube and redirects Shorts URLs.
-* **Closed Shadow DOM Isolation**: Guarantees zero CSS leaks or styling collisions with host web pages.
 
 ---
 
@@ -36,29 +36,24 @@
 
 ```mermaid
 flowchart TD
-    subgraph Browser Context
-        UserTab["User navigates to distracting site"]
+    subgraph Browser Engine
+        NavEvent["User navigates to distracting site (e.g., youtube.com)"]
         ServiceWorker["Background Service Worker (service-worker.ts)"]
-        ContentScript["Content Script (content.ts at document_start)"]
-        ShortsFilter["Shorts DOM Purger"]
-        ShadowRoot["Closed Shadow DOM Container"]
-        Storage["chrome.storage.local (Rules, Settings & Stats)"]
+        LocalGuard["Local Extension Guard Page (guard/index.html)"]
+        FocusSite["Productive Focus Site (e.g., https://github.com)"]
+        TargetSite["Target Site with 15s Countdown HUD"]
     end
 
-    UserTab -->|Navigation change| ServiceWorker
-    ServiceWorker -->|Check domain rules| Storage
-    Storage -->|Rule match detected| ServiceWorker
-    ServiceWorker -->|Transmit hardcore guard status| ContentScript
-    ContentScript -->|Purge Shorts elements| ShortsFilter
-    ContentScript -->|Attach opaque barrier| ShadowRoot
+    NavEvent -->|onBeforeNavigate before HTTP request| ServiceWorker
+    ServiceWorker -->|Active pass exists?| PassCheck{Active Pass?}
 
-    ShadowRoot -->|State: Guard Active| CanvasRoadblock["Canvas Anti-OCR Barrier\n• 203-word exact typing\n• Paste/drag blocked\n• Return to Focus Site (Esc)"]
-    ShadowRoot -->|State: Unlocked| PassHUD["15s Temporary Pass HUD\n• Live countdown\n• Re-locks upon expiry"]
+    PassCheck -->|No Pass: Zero Data Loaded| LocalGuard
+    PassCheck -->|Pass Active < 15s| TargetSite
 
-    CanvasRoadblock -->|Click Return or Esc| Redirect["Redirect tab to Focus Site\n(e.g., https://github.com)"]
-    CanvasRoadblock -->|Type 203w 100%| GrantPass["Grant strictly max 15s access"]
-    GrantPass --> PassHUD
-    PassHUD -->|15s expires| CanvasRoadblock
+    LocalGuard -->|Press Esc or 'Return to Focus'| FocusSite
+    LocalGuard -->|100% 203w Pledge Completed| Unlock["Grant strictly max 15s pass"]
+    Unlock --> TargetSite
+    TargetSite -->|15s Expired| LocalGuard
 
 ---
 

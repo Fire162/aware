@@ -23,6 +23,33 @@ chrome.runtime.onInstalled.addListener(async () => {
   console.log('[Aware] Initialized storage, rules, and settings.');
 });
 
+// Zero-network interceptor: redirects tab BEFORE any HTTP request or data is loaded
+chrome.webNavigation.onBeforeNavigate.addListener(async (details) => {
+  // Only intercept main frame top-level navigations
+  if (details.frameId !== 0) return;
+  const url = details.url;
+  if (!url || !url.startsWith('http')) return;
+
+  try {
+    const rules = await getRules();
+    const rule = matchRule(url, rules);
+    if (!rule) return;
+
+    const domain = extractHostname(url);
+    const remainingPass = await getRemainingPassSeconds(domain);
+
+    // If no active pass, redirect immediately to local extension guard page!
+    if (remainingPass <= 0) {
+      const guardUrl = chrome.runtime.getURL(
+        `guard/index.html?target=${encodeURIComponent(url)}`
+      );
+      chrome.tabs.update(details.tabId, { url: guardUrl });
+    }
+  } catch (err) {
+    console.error('[Aware] webNavigation error:', err);
+  }
+});
+
 // Clean up sessions when tab is closed
 chrome.tabs.onRemoved.addListener(async (tabId) => {
   const session = activeSessions.get(tabId);
