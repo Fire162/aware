@@ -13,7 +13,7 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 <p align="center">
-  <strong>Aware</strong> is an intentional browser extension that prevents mindless scrolling and restores your attention to what truly matters: your craft, study, and deep work.
+  <strong>Aware</strong> is a Chrome extension that intercepts distracting websites before network requests load, replacing mindless scrolling with friction gates, mindfulness pauses, and focus redirection.
 </p>
 
 </div>
@@ -160,7 +160,7 @@ pnpm run build
 Ensure the site is added to your active rules in the extension popup. You can click **Add to Guard** while visiting the page to register it instantly.
 
 ### Why is Closed Shadow DOM used?
-Major web platforms like YouTube and Twitter have aggressive style resets and CSS custom properties that break standard DOM overlays. Closed Shadow DOM encapsulates all styles and DOM elements so the extension looks pristine anywhere.
+Major web platforms like YouTube and Twitter have aggressive style resets and CSS custom properties that break standard DOM overlays. Closed Shadow DOM encapsulates all styles and DOM elements so the extension renders consistently on every page.
 
 </details>
 
